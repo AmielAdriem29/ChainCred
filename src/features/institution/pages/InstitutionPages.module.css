@@ -280,6 +280,29 @@
 .confirmApproveBtn:hover {
   background: #15803d;
 }
+
+/* ── Success state modal ── */
+.successModal {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+}
+
+.successIconWrap {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: rgba(22, 163, 74, 0.15);
+  border: 1.5px solid rgba(22, 163, 74, 0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+  color: #22c55e;
+  margin-bottom: 4px;
+}
+
 /* ── Blockchain TX info in approval modal ── */
 .txRow {
   display: flex;
@@ -290,7 +313,7 @@
   border-radius: 8px;
   padding: 10px 14px;
   width: 100%;
-  margin-top: 4px;
+  box-sizing: border-box;
 }
 
 .txLabel {
@@ -303,20 +326,38 @@
 }
 
 .txValue {
-  font-size: 13px;
+  font-size: 12px;
   font-family: var(--font-mono);
   color: var(--brand-light);
   word-break: break-all;
+  text-align: left;
 }
 
 .explorerLink {
-  font-size: 14px;
+  font-size: 13px;
   color: var(--brand-light);
   text-decoration: none;
-  align-self: flex-start;
-  margin-top: 2px;
+  padding: 6px 0;
 }
 
 .explorerLink:hover {
   text-decoration: underline;
+}
+
+.successDoneBtn {
+  margin-top: 4px;
+  padding: 10px 40px;
+  border-radius: 8px;
+  border: none;
+  background: #16a34a;
+  color: #fff;
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s;
+  width: 100%;
+}
+
+.successDoneBtn:hover {
+  background: #15803d;
 }

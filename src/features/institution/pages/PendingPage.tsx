@@ -243,18 +243,18 @@ export function InstitutionPendingPage() {
               </>
             )}
 
-            {/* ── Success ── */}
+
             {approveStep === 'done' && (
-              <>
-                <div className={styles.modalIcon}>✓</div>
+              <div className={styles.successModal}>
+                <div className={styles.successIconWrap}>✓</div>
                 <h2 className={styles.modalHeading}>Verified & Anchored</h2>
-                <p className={styles.modalBody}>
-                  The credential has been verified and permanently recorded on the Cardano Preview testnet.
+                <p className={styles.modalBody} style={{ marginBottom: 0 }}>
+                  The credential has been permanently recorded on the Cardano Preview testnet.
                 </p>
                 <div className={styles.txRow}>
                   <span className={styles.txLabel}>TX</span>
                   <span className={styles.txValue}>
-                    {lastTxHash.slice(0, 16)}…{lastTxHash.slice(-8)}
+                    {lastTxHash.slice(0, 20)}…{lastTxHash.slice(-8)}
                   </span>
                 </div>
                 <a
@@ -265,10 +265,8 @@ export function InstitutionPendingPage() {
                 >
                   View on Cardanoscan ↗
                 </a>
-                <div className={styles.modalActions}>
-                  <button className={styles.confirmApproveBtn} onClick={closeModal}>Done</button>
-                </div>
-              </>
+                <button className={styles.successDoneBtn} onClick={closeModal}>Done</button>
+              </div>
             )}
 
             {/* ── Error ── */}
@@ -294,7 +292,7 @@ export function InstitutionPendingPage() {
                   {confirmAction.type === 'approve' ? 'Approve Credential?' : 'Reject Credential?'}
                 </h2>
                 <p className={styles.modalBody}>
-                  You are about to <strong>{confirmAction.type}</strong>{' '}
+                  You are about to {confirmAction.type}{' '}
                   <strong>{confirmAction.credential.name}</strong> submitted by{' '}
                   <strong>{confirmAction.credential.ownerName ?? 'this holder'}</strong>.{' '}
                   {confirmAction.type === 'approve'
