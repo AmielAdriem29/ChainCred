@@ -288,7 +288,7 @@ export function CredentialCard({ credential }: Props) {
         </button>
 
         <div className={styles.date}>
-          {extra
+          {extra && status === 'pending'
             ? `${issuedDate} · ${extra}`
             : blockNumber
               ? `Issued ${issuedDate} · Block #${blockNumber}`

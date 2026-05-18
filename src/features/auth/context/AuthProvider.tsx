@@ -1,4 +1,4 @@
-import { useState, useMemo, useEffect } from 'react';
+import { useState, useMemo, useEffect, useRef } from 'react';
 import type { ReactNode } from 'react';
 import { AuthContext } from './authContext';
 import type { UserProfile } from './authTypes';
@@ -7,7 +7,6 @@ const STORAGE_KEY = 'chaincred_users';
 const SESSION_KEY = 'chaincred_session';
 const WALLET_KEY  = 'chaincred_wallet';
 
-// getUsers MUST be defined before seedInstitutions
 function getUsers(): Record<string, UserProfile> {
   try {
     const data = localStorage.getItem(STORAGE_KEY);
@@ -19,7 +18,8 @@ function getUsers(): Record<string, UserProfile> {
 
 const INSTITUTION_SEED: UserProfile[] = [
   {
-walletAddress: 'addr_test1qqc76e0p3kfncru2z8exf5j6x8gwsduxwg088q9j05mk53wmp7qkqalrl0a05jsxgtkl5n9a67m23s4x92c8ydwhkxrsthzvmg',    name: 'Cebu Institute of Technology – University',
+walletAddress: 'addr_test1qqc76e0p3kfncru2z8exf5j6x8gwsduxwg088q9j05mk53wmp7qkqalrl0a05jsxgtkl5n9a67m23s4x92c8ydwhkxrsthzvmg',
+    name: 'Cebu Institute of Technology – University',
     email: 'citu@chaincred.app',
     registeredAt: '2025-01-01T00:00:00.000Z',
     accountType: 'institution',
@@ -51,9 +51,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   });
 
   const [walletDisconnected, setWalletDisconnected] = useState(false);
+  // Ref-based flag: skip the disconnection check right after login/register
+  const skipNextCheck = useRef(false);
 
   useEffect(() => {
     if (!user) return;
+
+    if (skipNextCheck.current) {
+      skipNextCheck.current = false;
+      return;
+    }
 
     let cancelled = false;
 
@@ -83,9 +90,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       }
     };
 
-    checkWalletConnection();
-
-    return () => { cancelled = true; };
+    const timer = setTimeout(checkWalletConnection, 1000);
+    return () => {
+      cancelled = true;
+      clearTimeout(timer);
+    };
   }, [user]);
 
   const value = useMemo(() => {
@@ -96,6 +105,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const login = (address: string): UserProfile | null => {
       const profile = getUsers()[address] || null;
       if (profile) {
+        skipNextCheck.current = true;
         setUser(profile);
         setWalletDisconnected(false);
         sessionStorage.setItem(SESSION_KEY, JSON.stringify(profile));
@@ -107,6 +117,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       const users = getUsers();
       users[profile.walletAddress] = profile;
       localStorage.setItem(STORAGE_KEY, JSON.stringify(users));
+      skipNextCheck.current = true;
       setUser(profile);
       setWalletDisconnected(false);
       sessionStorage.setItem(SESSION_KEY, JSON.stringify(profile));
