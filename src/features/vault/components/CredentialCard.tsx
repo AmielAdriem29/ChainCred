@@ -308,6 +308,16 @@ export function CredentialCard({ credential }: Props) {
               {previewLoading ? 'Opening…' : '📄 View Document'}
             </button>
           )}
+          {isFullHash && (
+            <a
+              className={`${styles.actionBtn} ${styles.actionBtnChain}`}
+              href={`https://preview.cardanoscan.io/transaction/${txHash}`}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              View on Cardanoscan ↗
+            </a>
+          )}
           <button
             className={`${styles.actionBtn} ${styles.actionBtnDanger}`}
             onClick={() => setShowDeleteModal(true)}
