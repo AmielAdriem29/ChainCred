@@ -3,7 +3,8 @@ export interface UserProfile {
   name: string;
   email: string;
   registeredAt: string;
-  accountType: 'holder' | 'institution';
+  accountType: 'holder' | 'organization';
+  organizationName?: string;
 }
 
 export interface AuthContextType {

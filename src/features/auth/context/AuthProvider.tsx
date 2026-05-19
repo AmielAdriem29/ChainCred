@@ -18,11 +18,12 @@ function getUsers(): Record<string, UserProfile> {
 
 const INSTITUTION_SEED: UserProfile[] = [
   {
-walletAddress: 'addr_test1qqc76e0p3kfncru2z8exf5j6x8gwsduxwg088q9j05mk53wmp7qkqalrl0a05jsxgtkl5n9a67m23s4x92c8ydwhkxrsthzvmg',
+    walletAddress: 'addr_test1qqc76e0p3kfncru2z8exf5j6x8gwsduxwg088q9j05mk53wmp7qkqalrl0a05jsxgtkl5n9a67m23s4x92c8ydwhkxrsthzvmg',
     name: 'Cebu Institute of Technology – University',
     email: 'citu@chaincred.app',
     registeredAt: '2025-01-01T00:00:00.000Z',
-    accountType: 'institution',
+    accountType: 'organization',
+    organizationName: 'Cebu Institute of Technology – University',
   },
 ];
 
@@ -40,6 +41,7 @@ function seedInstitutions() {
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   seedInstitutions();
+
   const [user, setUser] = useState<UserProfile | null>(() => {
     try {
       const session = sessionStorage.getItem(SESSION_KEY);
@@ -51,7 +53,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   });
 
   const [walletDisconnected, setWalletDisconnected] = useState(false);
-  // Ref-based flag: skip the disconnection check right after login/register
   const skipNextCheck = useRef(false);
 
   useEffect(() => {

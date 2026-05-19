@@ -108,8 +108,8 @@ function NavItem({
 
 export function Sidebar({ active, onNavigate }: Props) {
   const { user } = useAuth();
-  const isInstitution = user?.accountType === 'institution';
-  const navItems = isInstitution ? INSTITUTION_NAV : HOLDER_NAV;
+  const isOrganization = user?.accountType === 'organization'; // ← changed
+  const navItems = isOrganization ? INSTITUTION_NAV : HOLDER_NAV; // ← changed
 
   return (
     <aside className={styles.sidebar}>

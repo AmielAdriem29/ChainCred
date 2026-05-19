@@ -15,7 +15,7 @@
   border: 0.5px solid rgba(255, 255, 255, 0.08);
   border-radius: 20px;
   padding: 3rem;
-  width: min(480px, 90vw);
+  width: min(520px, 90vw);
   display: flex;
   flex-direction: column;
   gap: 20px;
@@ -52,13 +52,72 @@
 }
 
 .stepLabel {
-  font-size: 14px;
+  font-size: 13px;
   font-weight: 500;
   color: #378ADD;
   text-transform: uppercase;
   letter-spacing: 0.5px;
   text-align: center;
 }
+
+/* ── Account Type Selector ── */
+
+.accountTypeGrid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+}
+
+.accountTypeBtn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding: 18px 14px;
+  border: 0.5px solid rgba(255, 255, 255, 0.08);
+  border-radius: 12px;
+  background: rgba(17, 20, 29, 0.8);
+  color: #94a3b8;
+  font-family: var(--font-sans);
+  cursor: pointer;
+  transition: border-color 0.15s, background 0.15s, color 0.15s;
+  text-align: center;
+}
+
+.accountTypeBtn:hover {
+  border-color: rgba(55, 138, 221, 0.4);
+  background: rgba(55, 138, 221, 0.06);
+  color: #cbd5e1;
+}
+
+.accountTypeBtnActive {
+  border-color: #378ADD;
+  background: rgba(55, 138, 221, 0.12);
+  color: #f1f5f9;
+}
+
+.accountTypeIcon {
+  font-size: 28px;
+  line-height: 1;
+}
+
+.accountTypeLabel {
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: 0.2px;
+}
+
+.accountTypeDesc {
+  font-size: 12px;
+  color: #64748b;
+  line-height: 1.4;
+}
+
+.accountTypeBtnActive .accountTypeDesc {
+  color: #94a3b8;
+}
+
+/* ── Wallet list ── */
 
 .walletList {
   display: flex;
@@ -113,6 +172,8 @@
   border-radius: 20px;
   align-self: center;
 }
+
+/* ── Form fields ── */
 
 .fields {
   display: flex;
@@ -209,14 +270,4 @@
 
 .linkBtn:hover {
   text-decoration: underline;
-}
-
-.institutionBadge {
-  background: var(--color-accent, #1a56db);
-  color: #fff;
-  border-radius: 6px;
-  padding: 8px 12px;
-  font-size: 0.85rem;
-  margin-bottom: 12px;
-  text-align: center;
 }

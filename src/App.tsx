@@ -29,9 +29,9 @@ function parseProfileRoute() {
 
 function AppContent() {
   const { user, walletDisconnected } = useAuth();
-  const isInstitution = user?.accountType === 'institution';
+  const isOrganization = user?.accountType === 'organization'; // ← changed
   const { active, navigate } = useNavigation(
-    isInstitution ? 'institution-dashboard' : 'vault'
+    isOrganization ? 'institution-dashboard' : 'vault' // ← changed
   );
   const [authView, setAuthView] = useState<AuthView>('login');
   const shareParams = new URLSearchParams(window.location.search);
@@ -65,7 +65,7 @@ function AppContent() {
           {active === 'share'    && <SharePage />}
           {active === 'public'   && <PublicProfilePage />}
           {active === 'settings' && <SettingsPage />}
-          {/* Institution routes */}
+          {/* Organization routes */}
           {active === 'institution-dashboard' && <InstitutionDashboardPage />}
           {active === 'institution-pending'   && <InstitutionPendingPage />}
         </main>
