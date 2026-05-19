@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from '../../auth/context/useAuth';
 import type { Credential } from '../../../shared/types';
+import { IssueCredentialModal } from '../components/IssueCredentialModal';
 import styles from './InstitutionPages.module.css';
 
 const VAULT_KEY_PREFIX = 'chaincred_vault_';
@@ -40,23 +41,14 @@ export function InstitutionDashboardPage() {
   const walletAddress = user?.walletAddress ?? null;
   const [credentials, setCredentials] = useState<Credential[]>([]);
   const [revokeTarget, setRevokeTarget] = useState<Credential | null>(null);
+  const [issueModalOpen, setIssueModalOpen] = useState(false);
+  // Incrementing this triggers the effect to re-read localStorage
+  const [refreshTick, setRefreshTick] = useState(0);
 
   useEffect(() => {
     if (!walletAddress) return;
-    const interval = setInterval(() => {
-      void Promise.resolve().then(() => {
-        const all = getAllHolderCredentials();
-        setCredentials(
-          all.filter(c =>
-            c.institutionWallet === walletAddress &&
-            (c.status === 'verified' || c.status === 'revoked')
-          )
-        );
-      });
-    }, 3000);
 
-    // initial load
-    void Promise.resolve().then(() => {
+    const refresh = () => {
       const all = getAllHolderCredentials();
       setCredentials(
         all.filter(c =>
@@ -64,30 +56,40 @@ export function InstitutionDashboardPage() {
           (c.status === 'verified' || c.status === 'revoked')
         )
       );
-    });
+    };
 
+    // Defer initial load to avoid synchronous setState in the effect body
+    void Promise.resolve().then(refresh);
+    const interval = setInterval(refresh, 3000);
     return () => clearInterval(interval);
-  }, [walletAddress]);
+  }, [walletAddress, refreshTick]);
 
   const handleRevokeConfirm = () => {
     if (!revokeTarget || !revokeTarget.ownerWallet) return;
     updateCredentialStatus(revokeTarget.ownerWallet, revokeTarget.id, 'revoked');
     setRevokeTarget(null);
-    const all = getAllHolderCredentials();
-    setCredentials(
-      all.filter(c =>
-        c.institutionWallet === walletAddress &&
-        (c.status === 'verified' || c.status === 'revoked')
-      )
-    );
+    setRefreshTick(t => t + 1);
+  };
+
+  const handleIssueModalClose = () => {
+    setIssueModalOpen(false);
+    setRefreshTick(t => t + 1);
   };
 
   return (
     <div className={styles.page}>
       <div className={styles.contentArea}>
         <div className={styles.topbar}>
-          <h1 className={styles.heading}>Dashboard</h1>
-          <span className={styles.sub}>{user?.name}</span>
+          <div>
+            <h1 className={styles.heading}>Dashboard</h1>
+            <span className={styles.sub}>{user?.organizationName ?? user?.name}</span>
+          </div>
+          <button
+            className={styles.issueBtn}
+            onClick={() => setIssueModalOpen(true)}
+          >
+            + Issue Credential
+          </button>
         </div>
 
         <p className={styles.sectionTitle}>Issued Credentials</p>
@@ -162,6 +164,11 @@ export function InstitutionDashboardPage() {
           </div>
         </div>
       )}
+
+      <IssueCredentialModal
+        isOpen={issueModalOpen}
+        onClose={handleIssueModalClose}
+      />
     </div>
   );
 }

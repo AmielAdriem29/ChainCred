@@ -361,3 +361,22 @@
 .successDoneBtn:hover {
   background: #15803d;
 }
+/* ── Issue Credential button (topbar) ── */
+.issueBtn {
+  padding: 10px 20px;
+  border-radius: 9px;
+  border: none;
+  background: var(--brand-primary);
+  color: #fff;
+  font-family: var(--font-sans);
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.issueBtn:hover {
+  background: #2570c0;
+}
