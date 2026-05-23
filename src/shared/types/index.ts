@@ -3,8 +3,8 @@ export type CredentialStatus = 'verified' | 'pending' | 'revoked' | 'rejected';
 export interface Credential {
   id: string;
   name: string;
-  institution: string;
-  institutionWallet?: string;
+  organization: string;          
+  organizationWallet?: string;  
   year: number;
   logoText: string;
   logoColor?: string;

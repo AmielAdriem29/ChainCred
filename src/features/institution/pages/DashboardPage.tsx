@@ -52,7 +52,7 @@ export function InstitutionDashboardPage() {
       const all = getAllHolderCredentials();
       setCredentials(
         all.filter(c =>
-          c.institutionWallet === walletAddress &&
+          c.organizationWallet === walletAddress &&
           (c.status === 'verified' || c.status === 'revoked')
         )
       );

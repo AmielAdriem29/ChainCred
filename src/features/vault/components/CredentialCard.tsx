@@ -12,7 +12,6 @@ interface Props {
   credential: Credential;
 }
 
-// ── Delete Confirmation Modal ─────────────────────────────────────────────────
 type DeleteStep = 'confirm' | 'wallet' | 'deleting';
 
 function DeleteModal({
@@ -152,22 +151,21 @@ function DeleteModal({
   );
 }
 
-// ── Credential Card ──────────────────────────────────────────────────────────
 export function CredentialCard({ credential }: Props) {
   const { updateCredential } = useCredentials();
   const { user } = useAuth();
-  const { id, name, institution, year, logoText, logoColor, logoTextColor, status, txHash, blockNumber, issuedDate, fileKey, fileName, fileType, ipfsGatewayUrl } = credential;
+  const { id, name, organization, year, logoText, logoColor, logoTextColor, status, txHash, blockNumber, issuedDate, fileKey, fileName, fileType, ipfsGatewayUrl } = credential;
 
   const [editing, setEditing] = useState(false);
   const [editName, setEditName] = useState(name);
-  const [editInstitution, setEditInstitution] = useState(institution);
+  const [editOrganization, setEditOrganization] = useState(organization);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [showDeleted, setShowDeleted] = useState(false);
   const [hashCopied, setHashCopied] = useState(false);
   const [previewLoading, setPreviewLoading] = useState(false);
 
   const handleSave = async () => {
-    await updateCredential(id, { name: editName.trim(), institution: editInstitution.trim() });
+    await updateCredential(id, { name: editName.trim(), organization: editOrganization.trim() });
     setEditing(false);
   };
 
@@ -222,9 +220,9 @@ export function CredentialCard({ credential }: Props) {
               />
               <input
                 className={styles.editInput}
-                value={editInstitution}
-                onChange={e => setEditInstitution(e.target.value)}
-                placeholder="Institution"
+                value={editOrganization}
+                onChange={e => setEditOrganization(e.target.value)}
+                placeholder="Organization"
               />
             </div>
             <StatusBadge status={status} />
@@ -240,10 +238,7 @@ export function CredentialCard({ credential }: Props) {
 
   return (
     <>
-      {showDeleted && (
-        <div className={styles.toast}>✓ Credential deleted successfully</div>
-      )}
-
+      {showDeleted && <div className={styles.toast}>✓ Credential deleted successfully</div>}
       {showDeleteModal && (
         <DeleteModal
           credential={credential}
@@ -257,19 +252,14 @@ export function CredentialCard({ credential }: Props) {
       )}
 
       <div className={styles.card}>
-        {/* Left Side: Standalone Logo Div */}
         <div className={styles.logo} style={{ background: logoColor, color: logoTextColor }}>
           {logoText}
         </div>
-
-        {/* Right Side: Primary Flex Column (Information block + action buttons underneath) */}
         <div className={styles.mainColumn}>
-          
-          {/* Top of Right Column: Details & Status Badge Row */}
           <div className={styles.detailsHeader}>
             <div className={styles.details}>
               <div className={styles.name} title={name}>{name}</div>
-              <div className={styles.inst} title={institution}>{institution} · {year}</div>
+              <div className={styles.inst} title={organization}>{organization} · {year}</div>
               <div className={styles.date}>
                 {getDateLabel()}
                 {blockNumber ? `Block #${blockNumber}` : issuedDate}
@@ -282,17 +272,13 @@ export function CredentialCard({ credential }: Props) {
                     disabled={!isFullHash}
                   >
                     <span>{displayHash}</span>
-                    {isFullHash && (
-                      <span className={styles.hashCopyHint}>{hashCopied ? ' ✓' : ' 📋'}</span>
-                    )}
+                    {isFullHash && <span className={styles.hashCopyHint}>{hashCopied ? ' ✓' : ' 📋'}</span>}
                   </button>
                 </div>
               )}
             </div>
             <StatusBadge status={status} />
           </div>
-
-          {/* Bottom of Right Column: Action Buttons Row */}
           <div className={styles.cardActions}>
             {status === 'pending' && (
               <button className={styles.actionBtn} onClick={() => setEditing(true)}>Edit</button>
@@ -312,10 +298,7 @@ export function CredentialCard({ credential }: Props) {
                 Scan ↗
               </a>
             )}
-            <button
-              className={`${styles.actionBtn} ${styles.actionBtnDanger}`}
-              onClick={() => setShowDeleteModal(true)}
-            >
+            <button className={`${styles.actionBtn} ${styles.actionBtnDanger}`} onClick={() => setShowDeleteModal(true)}>
               Delete
             </button>
           </div>

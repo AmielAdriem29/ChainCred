@@ -1,10 +1,10 @@
-import { useState, useRef, useCallback, useEffect } from 'react';
+import { useState, useRef, useCallback, useEffect, useMemo } from 'react';
 import { useCredentials } from '../../credentials';
 import { useAuth } from '../../auth';
 import { saveCredentialFile } from '../../../utils/storage';
 import { uploadToIPFS, pinOnIPFS } from '../../../shared/utils/ipfsStorage';
-import { INSTITUTIONS } from '../../../constants/institutions';
 import type { Credential } from '../../../shared';
+import type { UserProfile } from '../../auth/context/authTypes';
 import styles from './IssuanceModal.module.css';
 
 interface Props {
@@ -26,69 +26,34 @@ function generateId(): string {
   return `cred_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`;
 }
 
-function CustomSelect({
-  value,
-  onChange,
-  options,
-  placeholder = 'Select an option',
-}: {
-  value: string;
-  onChange: (v: string) => void;
-  options: { label: string; value: string }[];
-  placeholder?: string;
-}) {
-  const [open, setOpen] = useState(false);
-  const containerRef = useRef<HTMLDivElement>(null);
-
-  const selected = options.find(o => o.value === value);
-
-  const handleOpen = () => {
-    setOpen(o => !o);
-  };
-
-  useEffect(() => {
-    if (!open) return;
-    const handler = (e: MouseEvent) => {
-      if (containerRef.current && !containerRef.current.contains(e.target as Node)) {
-        setOpen(false);
-      }
-    };
-    document.addEventListener('mousedown', handler);
-    return () => document.removeEventListener('mousedown', handler);
-  }, [open]);
-
-  return (
-    <div className={styles.selectContainer} ref={containerRef}>
-      <button
-        type="button"
-        className={`${styles.selectTrigger} ${open ? styles.selectTriggerOpen : ''}`}
-        onClick={handleOpen}
-      >
-        <span className={selected ? styles.selectValue : styles.selectPlaceholder}>
-          {selected ? selected.label : placeholder}
-        </span>
-        <span className={`${styles.selectChevron} ${open ? styles.selectChevronOpen : ''}`}>▾</span>
-      </button>
-
-      {open && (
-        <div className={styles.selectDropdown}>
-          {options.map(opt => (
-            <button
-              key={opt.value}
-              type="button"
-              className={`${styles.selectOption} ${opt.value === value ? styles.selectOptionActive : ''}`}
-              onClick={() => { onChange(opt.value); setOpen(false); }}
-            >
-              {opt.label}
-              {opt.value === value && <span className={styles.selectOptionCheck}>✓</span>}
-            </button>
-          ))}
-        </div>
-      )}
-    </div>
-  );
+function getOrgWalletByName(orgName: string): string {
+  try {
+    const raw = localStorage.getItem('chaincred_users');
+    if (!raw) return '';
+    const users = JSON.parse(raw) as Record<string, UserProfile>;
+    const match = Object.values(users).find(
+      u =>
+        u.accountType === 'organization' &&
+        u.organizationName?.toLowerCase() === orgName.trim().toLowerCase()
+    );
+    return match?.walletAddress ?? '';
+  } catch {
+    return '';
+  }
 }
 
+function getOrgAccounts(): UserProfile[] {
+  try {
+    const raw = localStorage.getItem('chaincred_users');
+    if (!raw) return [];
+    const users = JSON.parse(raw) as Record<string, UserProfile>;
+    return Object.values(users).filter(u => u.accountType === 'organization');
+  } catch {
+    return [];
+  }
+}
+
+// Date picker component (unchanged)
 function DatePickerPopover({ value, onChange }: { value: string; onChange: (v: string) => void }) {
   const today = new Date();
   const parsed = value ? new Date(value + 'T00:00:00') : null;
@@ -259,15 +224,25 @@ export function IssuanceModal({ isOpen, onClose }: Props) {
   const [dragOver, setDragOver] = useState(false);
   const [file, setFile] = useState<File | null>(null);
   const [name, setName] = useState('');
-  const [institution, setInstitution] = useState('');
+  const [organization, setOrganization] = useState('');
   const [issueDate, setIssueDate] = useState(todayStr);
   const [hash, setHash] = useState('');
   const [ipfsCid, setIpfsCid] = useState('');
   const [error, setError] = useState('');
 
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const orgSearchRef = useRef<HTMLDivElement>(null);
+  const [orgDropdownOpen, setOrgDropdownOpen] = useState(true);
 
-  const institutionOptions = INSTITUTIONS.map(i => ({ label: i.name, value: i.name }));
+  const orgSuggestions = useMemo(() => {
+    if (!organization.trim()) return [];
+    const q = organization.toLowerCase();
+    return getOrgAccounts()
+      .filter(u => u.organizationName?.toLowerCase().includes(q))
+      .slice(0, 6);
+  }, [organization]);
+
+  const showOrgDropdown = orgDropdownOpen && orgSuggestions.length > 0;
 
   const acceptFile = (f: File) => {
     const allowed = ['application/pdf', 'image/png', 'image/jpeg', 'image/webp'];
@@ -284,8 +259,19 @@ export function IssuanceModal({ isOpen, onClose }: Props) {
     if (f) acceptFile(f);
   }, []);
 
+  useEffect(() => {
+    if (!showOrgDropdown) return;
+    const handler = (e: MouseEvent) => {
+      if (orgSearchRef.current && !orgSearchRef.current.contains(e.target as Node)) {
+        setOrgDropdownOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handler);
+    return () => document.removeEventListener('mousedown', handler);
+  }, [showOrgDropdown]);
+
   const handleSubmit = async () => {
-    if (!file || !name.trim() || !institution.trim() || !issueDate) {
+    if (!file || !name.trim() || !organization.trim() || !issueDate) {
       setError('Please fill in all fields and upload a document.');
       return;
     }
@@ -312,8 +298,7 @@ export function IssuanceModal({ isOpen, onClose }: Props) {
         return;
       }
 
-      const selectedInstitution = INSTITUTIONS.find(i => i.name === institution.trim());
-      const logoText = institution.trim().slice(0, 3).toUpperCase();
+      const logoText = organization.trim().slice(0, 3).toUpperCase();
       const dateStr = new Date(issueDate + 'T00:00:00').toLocaleDateString('en-US', {
         month: 'short', day: 'numeric', year: 'numeric',
       });
@@ -321,8 +306,8 @@ export function IssuanceModal({ isOpen, onClose }: Props) {
       const newCredential: Credential = {
         id: generateId(),
         name: name.trim(),
-        institution: institution.trim(),
-        institutionWallet: selectedInstitution?.walletAddress ?? '',
+        organization: organization.trim(),
+        organizationWallet: getOrgWalletByName(organization),
         year: new Date(issueDate).getFullYear(),
         logoText,
         status: 'pending',
@@ -360,7 +345,8 @@ export function IssuanceModal({ isOpen, onClose }: Props) {
     setStep('form');
     setFile(null);
     setName('');
-    setInstitution('');
+    setOrganization('');
+    setOrgDropdownOpen(true);
     setIssueDate(todayStr);
     setHash('');
     setIpfsCid('');
@@ -395,13 +381,38 @@ export function IssuanceModal({ isOpen, onClose }: Props) {
                 />
               </div>
               <div className={styles.field}>
-                <label className={styles.label}>Issuing institution</label>
-                <CustomSelect
-                  value={institution}
-                  onChange={setInstitution}
-                  options={institutionOptions}
-                  placeholder="Select an institution"
-                />
+                <label className={styles.label}>Organization</label>
+                <div className={styles.searchWrap} ref={orgSearchRef}>
+                  <input
+                    className={styles.input}
+                    placeholder="e.g. University of Cambridge, Google, etc."
+                    value={organization}
+                    onChange={e => { setOrganization(e.target.value); setOrgDropdownOpen(true); }}
+                    onKeyDown={e => {
+                      if (e.key === 'Enter' && orgSuggestions.length > 0) {
+                        e.preventDefault();
+                        setOrganization(orgSuggestions[0].organizationName ?? orgSuggestions[0].name);
+                        setOrgDropdownOpen(false);
+                      }
+                    }}
+                    autoComplete="off"
+                  />
+                  {showOrgDropdown && (
+                    <div className={styles.dropdown}>
+                      {orgSuggestions.map(u => (
+                        <button
+                          key={u.walletAddress}
+                          type="button"
+                          className={styles.dropdownItem}
+                          onClick={() => { setOrganization(u.organizationName ?? u.name); setOrgDropdownOpen(false); }}
+                        >
+                          <span className={styles.dropdownName}>{u.organizationName ?? u.name}</span>
+                          <span className={styles.dropdownEmail}>{u.email}</span>
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                </div>
               </div>
             </div>
 

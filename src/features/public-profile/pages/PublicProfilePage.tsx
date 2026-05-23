@@ -27,7 +27,7 @@ interface PublicProfilePageProps {
 
 export function PublicProfilePage({ publicProfileWallet }: PublicProfilePageProps = {}) {
   const { user } = useAuth();
-  const [sharedCredentials, setSharedCredentials] = useState<Credential[]>([]);
+  const [allCredentials, setAllCredentials] = useState<Credential[]>([]);
   const [previewingId, setPreviewingId] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
 
@@ -44,12 +44,8 @@ export function PublicProfilePage({ publicProfileWallet }: PublicProfilePageProp
     return findShareLink(requestedWallet, requestedToken);
   });
 
-  const shareDenied =
-    isShareLinkRequest && shareRecord !== null && shareRecord.status === 'revoked';
-
-  const isSharedView =
-    isShareLinkRequest &&
-    (shareRecord === null || shareRecord.status === 'active');
+  const shareDenied = isShareLinkRequest && shareRecord !== null && shareRecord.status === 'revoked';
+  const isSharedView = isShareLinkRequest && (shareRecord === null || shareRecord.status === 'active');
 
   const activeWallet: string = isDirectProfileRoute
     ? (publicProfileWallet ?? '')
@@ -80,12 +76,12 @@ export function PublicProfilePage({ publicProfileWallet }: PublicProfilePageProp
     let cancelled = false;
     const hydrate = async () => {
       if (!activeWallet) {
-        if (!cancelled) setSharedCredentials([]);
+        if (!cancelled) setAllCredentials([]);
         return;
       }
       const hydrated = loadVaultCredentials(activeWallet);
       if (!cancelled) {
-        setSharedCredentials(hydrated.filter(item => item.status === 'verified'));
+        setAllCredentials(hydrated);
         if (shareRecord && shareRecord.status === 'active') {
           markShareLinkViewed(shareRecord.walletAddress, shareRecord.token);
         }
@@ -103,12 +99,7 @@ export function PublicProfilePage({ publicProfileWallet }: PublicProfilePageProp
     if (!credential.fileKey || !credential.fileName || !credential.fileType) return;
     setPreviewingId(credential.id);
     try {
-      await previewCredentialFile(
-        activeWallet,
-        credential.id,
-        credential.fileName,
-        credential.fileType,
-      );
+      await previewCredentialFile(activeWallet, credential.id, credential.fileName, credential.fileType);
     } catch (error) {
       console.error('Failed to preview file:', error);
     } finally {
@@ -116,23 +107,19 @@ export function PublicProfilePage({ publicProfileWallet }: PublicProfilePageProp
     }
   };
 
-  // Stats for Row 2
-  const verifiedCount = sharedCredentials.length;
-  const uniqueInstitutions = useMemo(() => {
-    const instSet = new Set(sharedCredentials.map(c => c.institution));
-    return instSet.size;
-  }, [sharedCredentials]);
+  const verifiedCount = allCredentials.filter(c => c.status === 'verified').length;
+  const uniqueOrganizations = useMemo(() => {
+    const orgSet = new Set(allCredentials.map(c => c.organization));
+    return orgSet.size;
+  }, [allCredentials]);
 
-  // Filter credentials based on search
   const filteredCredentials = useMemo(() => {
-    if (!searchQuery.trim()) return sharedCredentials;
+    if (!searchQuery.trim()) return allCredentials;
     const query = searchQuery.toLowerCase();
-    return sharedCredentials.filter(
-      cred =>
-        cred.name.toLowerCase().includes(query) ||
-        cred.institution.toLowerCase().includes(query)
+    return allCredentials.filter(
+      cred => cred.name.toLowerCase().includes(query) || cred.organization.toLowerCase().includes(query)
     );
-  }, [sharedCredentials, searchQuery]);
+  }, [allCredentials, searchQuery]);
 
   if (shareDenied) {
     return (
@@ -141,9 +128,7 @@ export function PublicProfilePage({ publicProfileWallet }: PublicProfilePageProp
         <div className={styles.contentArea}>
           <div className={styles.deniedCard}>
             <div className={styles.deniedTitle}>Access Denied</div>
-            <p className={styles.deniedText}>
-              This public profile link has been revoked or is no longer valid.
-            </p>
+            <p className={styles.deniedText}>This public profile link has been revoked or is no longer valid.</p>
             <p className={styles.deniedMeta}>
               {requestedWallet && <span>Wallet: {formatShortWallet(requestedWallet)}</span>}
               {requestedToken && <span>Token: {requestedToken.slice(0, 12)}…</span>}
@@ -154,20 +139,12 @@ export function PublicProfilePage({ publicProfileWallet }: PublicProfilePageProp
     );
   }
 
-  const profileDisplayName =
-    shareRecord?.recipientName ??
-    user?.name ??
-    (activeWallet ? formatShortWallet(activeWallet) : 'Student');
-
-  const walletDisplayName = isDirectProfileRoute
-    ? formatShortWallet(publicProfileWallet ?? '')
-    : profileDisplayName;
-
-  // Determine banner text
+  const profileDisplayName = shareRecord?.recipientName ?? user?.name ?? (activeWallet ? formatShortWallet(activeWallet) : 'Student');
+  const walletDisplayName = isDirectProfileRoute ? formatShortWallet(publicProfileWallet ?? '') : profileDisplayName;
   const bannerText = isDirectProfileRoute
-    ? 'Public profile – only verified credentials are displayed'
+    ? 'Public profile – all credentials are displayed (pending ones are marked)'
     : isSharedView
-      ? `Shared with ${shareRecord?.recipientName ?? 'you'} – only verified credentials are shown`
+      ? `Shared with ${shareRecord?.recipientName ?? 'you'} – all credentials are shown`
       : 'Recruiter preview – what employers see when you share your profile';
 
   return (
@@ -177,7 +154,6 @@ export function PublicProfilePage({ publicProfileWallet }: PublicProfilePageProp
       </div>
 
       <div className={styles.contentArea}>
-        {/* ROW 1: Heading + Banner Pill */}
         <div className={styles.rowOne}>
           <div className={styles.headerArea}>
             <h2 className={styles.heading}>
@@ -187,9 +163,7 @@ export function PublicProfilePage({ publicProfileWallet }: PublicProfilePageProp
                   ? `${formatShortWallet(activeWallet || requestedWallet)} · Public Profile`
                   : `${user?.name ?? 'Your Profile'} · Public Profile`}
             </h2>
-            {!isDirectProfileRoute && user?.email && (
-              <p className={styles.profileEmail}>{user.email}</p>
-            )}
+            {!isDirectProfileRoute && user?.email && <p className={styles.profileEmail}>{user.email}</p>}
           </div>
           <div className={styles.bannerPill}>
             <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5">
@@ -200,7 +174,6 @@ export function PublicProfilePage({ publicProfileWallet }: PublicProfilePageProp
           </div>
         </div>
 
-        {/* ROW 2: Stats + Search Panel (matching VaultPage) */}
         <div className={styles.rowTwo}>
           <div className={styles.statsPanel}>
             <div className={styles.stat}>
@@ -208,36 +181,32 @@ export function PublicProfilePage({ publicProfileWallet }: PublicProfilePageProp
               <div className={styles.statValue}>{verifiedCount}</div>
             </div>
             <div className={styles.stat}>
-              <div className={styles.statLabel}>Institutions</div>
-              <div className={styles.statValue}>{uniqueInstitutions}</div>
+              <div className={styles.statLabel}>Organizations</div>
+              <div className={styles.statValue}>{uniqueOrganizations}</div>
             </div>
           </div>
           <div className={styles.searchPanel}>
             <input
               type="text"
               className={styles.searchInput}
-              placeholder="Search by name or institution..."
+              placeholder="Search by name or organization..."
               value={searchQuery}
               onChange={e => setSearchQuery(e.target.value)}
             />
           </div>
         </div>
 
-        {/* ROW 3: Section Header (optional, but consistent) */}
         <div className={styles.rowThree}>
-          <div className={styles.sectionTitle}>Verified credentials</div>
+          <div className={styles.sectionTitle}>Credentials</div>
           <div className={styles.sectionCount}>
             {filteredCredentials.length} {filteredCredentials.length === 1 ? 'credential' : 'credentials'} found
           </div>
         </div>
 
-        {/* ROW 4: Credential Grid with Logo Cards */}
         <div className={styles.grid}>
           {filteredCredentials.length === 0 ? (
             <div className={styles.emptyState}>
-              {sharedCredentials.length === 0
-                ? 'No verified credentials available for this profile.'
-                : 'No matches found for your search.'}
+              {allCredentials.length === 0 ? 'No credentials available for this profile.' : 'No matches found for your search.'}
             </div>
           ) : (
             filteredCredentials.map(cred => (
@@ -250,7 +219,6 @@ export function PublicProfilePage({ publicProfileWallet }: PublicProfilePageProp
                   opacity: previewingId === cred.id ? 0.7 : 1,
                 }}
               >
-                {/* Logo block (left side) */}
                 <div
                   className={styles.cardLogo}
                   style={{
@@ -258,15 +226,13 @@ export function PublicProfilePage({ publicProfileWallet }: PublicProfilePageProp
                     color: cred.logoTextColor || '#ffffff',
                   }}
                 >
-                  {cred.logoText || cred.institution.slice(0, 3).toUpperCase()}
+                  {cred.logoText || cred.organization.slice(0, 3).toUpperCase()}
                 </div>
-
-                {/* Main content */}
                 <div className={styles.cardContent}>
                   <div className={styles.cardHeader}>
                     <div>
                       <div className={styles.cardTitle}>{cred.name}</div>
-                      <div className={styles.cardSubtitle}>{cred.institution} · {cred.year}</div>
+                      <div className={styles.cardSubtitle}>{cred.organization} · {cred.year}</div>
                     </div>
                     <StatusBadge status={cred.status} />
                   </div>
@@ -280,7 +246,6 @@ export function PublicProfilePage({ publicProfileWallet }: PublicProfilePageProp
           )}
         </div>
 
-        {/* Footer */}
         <footer className={styles.footer}>
           Verified on Cardano · <span className={styles.brand}>ChainCred</span>
         </footer>

@@ -7,9 +7,12 @@ const VAULT_KEY_PREFIX = 'chaincred_vault_';
 
 function getAllHolderCredentials(): Credential[] {
   const all: Credential[] = [];
+  const keys: string[] = [];
   for (let i = 0; i < localStorage.length; i++) {
     const key = localStorage.key(i);
-    if (!key?.startsWith(VAULT_KEY_PREFIX)) continue;
+    if (key?.startsWith(VAULT_KEY_PREFIX)) keys.push(key);
+  }
+  for (const key of keys) {
     try {
       const raw = localStorage.getItem(key);
       if (!raw) continue;
@@ -63,7 +66,7 @@ async function submitVerificationToChain(credential: Credential, institutionName
   const metadata = {
     credential_id: trim64(credential.id),
     credential_name: trim64(credential.name),
-    institution: trim64(credential.institution),
+    institution: trim64(credential.organization),
     issued_date: trim64(credential.issuedDate),
     sha256: trim64(credential.sha256Hash ?? ''),
     owner: {
@@ -109,7 +112,7 @@ export function InstitutionPendingPage() {
       void Promise.resolve().then(() => {
         const all = getAllHolderCredentials();
         setPending(
-          all.filter(c => c.institutionWallet === walletAddress && c.status === 'pending')
+          all.filter(c => c.organizationWallet === walletAddress && c.status === 'pending')
         );
       });
     };
@@ -122,7 +125,7 @@ export function InstitutionPendingPage() {
   const reloadPending = () => {
     const all = getAllHolderCredentials();
     setPending(
-      all.filter(c => c.institutionWallet === walletAddress && c.status === 'pending')
+      all.filter(c => c.organizationWallet === walletAddress && c.status === 'pending')
     );
   };
 

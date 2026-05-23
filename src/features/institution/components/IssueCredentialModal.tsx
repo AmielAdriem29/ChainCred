@@ -42,7 +42,7 @@ function writeCredentialToVault(ownerWallet: string, credential: Credential): vo
   }
 }
 
-async function submitToChain(credential: Credential, institutionName: string): Promise<string> {
+async function submitToChain(credential: Credential, organizationName: string): Promise<string> {
   const mnemonic = import.meta.env.VITE_APP_WALLET_MNEMONIC as string;
   const blockfrostKey = import.meta.env.VITE_BLOCKFROST_API_KEY as string;
 
@@ -61,7 +61,7 @@ async function submitToChain(credential: Credential, institutionName: string): P
   const metadata = {
     credential_id: trim64(credential.id),
     credential_name: trim64(credential.name),
-    institution: trim64(credential.institution),
+    organization: trim64(credential.organization),
     issued_date: trim64(credential.issuedDate),
     sha256: trim64(credential.sha256Hash ?? ''),
     owner: {
@@ -69,7 +69,7 @@ async function submitToChain(credential: Credential, institutionName: string): P
       wallet: trim64(credential.ownerWallet ?? ''),
     },
     issued_by: {
-      institution: trim64(institutionName),
+      organization: trim64(organizationName),
       issued_at: new Date().toISOString().slice(0, 64),
     },
     ipfs_cid: trim64(credential.ipfsCid ?? ''),
@@ -179,7 +179,7 @@ export function IssueCredentialModal({ isOpen, onClose }: Props) {
     if (f) acceptFile(f);
   }, []);
 
-  // ── Submit ────────────────────────────────────────────────────────────────
+  // ── Submit handler (complete) ─────────────────────────────────────────────
 
   const handleSubmit = async () => {
     if (!recipient) { setError('Select a recipient first.'); return; }
@@ -230,8 +230,8 @@ export function IssueCredentialModal({ isOpen, onClose }: Props) {
     const credential: Credential = {
       id: generateId(),
       name: credName.trim(),
-      institution: orgName,
-      institutionWallet: orgWallet,
+      organization: orgName,
+      organizationWallet: orgWallet,   // ✅ now uses the issuer's wallet address
       year: new Date(issueDate).getFullYear(),
       logoText: orgName.slice(0, 3).toUpperCase(),
       status: 'verified',
@@ -257,7 +257,6 @@ export function IssueCredentialModal({ isOpen, onClose }: Props) {
       setTxHash(hash);
     } catch (err) {
       console.error('Chain submission failed:', err);
-      // Still write to vault with fallback txHash — don't block issuance
       setTxHash('');
     }
 
@@ -304,10 +303,9 @@ export function IssueCredentialModal({ isOpen, onClose }: Props) {
 
               {recipient ? (
                 <div className={styles.recipientChip}>
-                  <div className={styles.recipientChipInfo}>
-                    <span className={styles.recipientChipName}>{recipient.name}</span>
-                    <span className={styles.recipientChipEmail}>{recipient.email}</span>
-                  </div>
+                  <span className={styles.recipientChipName}>{recipient.name}</span>
+                  <span className={styles.recipientChipSep}>·</span>
+                  <span className={styles.recipientChipEmail}>{recipient.email}</span>
                   <button
                     type="button"
                     className={styles.recipientChipRemove}
@@ -323,6 +321,12 @@ export function IssueCredentialModal({ isOpen, onClose }: Props) {
                     placeholder="Search by email or name…"
                     value={query}
                     onChange={e => setQuery(e.target.value)}
+                    onKeyDown={e => {
+                      if (e.key === 'Enter' && suggestions.length > 0) {
+                        e.preventDefault();
+                        selectRecipient(suggestions[0]);
+                      }
+                    }}
                     autoComplete="off"
                   />
                   {showDropdown && (
