@@ -12,7 +12,7 @@ import { PublicProfilePage } from './features/public-profile';
 import { SettingsPage } from './features/settings';
 import { VerifyPage } from './features/verify';
 import { WalletReconnectModal } from './features/auth/components/WalletReconnectModal';
-import { InstitutionDashboardPage, InstitutionPendingPage } from './features/institution';
+import { InstitutionDashboardPage, InstitutionPendingPage } from './features/organization';
 import styles from './App.module.css';
 
 type AuthView = 'login' | 'register';

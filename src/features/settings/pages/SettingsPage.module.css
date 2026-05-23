@@ -1,4 +1,4 @@
-/* ── Page container – matches VaultPage ── */
+/* ── Page container – identical to VaultPage ── */
 .page {
   background: transparent;
   flex: 1;
@@ -51,10 +51,10 @@
   }
 }
 
-/* Card styling – identical to CredentialCard */
+/* Card styling – identical to CredentialCard, using var(--surface-1) */
 .card,
 .dangerCard {
-  background: #0d1525;
+  background: var(--surface-1);
   border-radius: var(--radius-lg);
   padding: 32px;
   display: flex;
@@ -220,7 +220,7 @@
   border-color: rgba(255, 255, 255, 0.3);
 }
 
-/* Danger zone inner layout (remains row‑like) */
+/* Danger zone inner layout */
 .dangerBody {
   display: flex;
   align-items: center;
@@ -263,7 +263,7 @@
   color: #fff;
 }
 
-/* ── Modal styles (unchanged, matches ShareModal) ── */
+/* ── Modal styles (using var(--surface-1)) ── */
 .backdrop {
   position: fixed;
   inset: 0;
@@ -277,7 +277,7 @@
 
 .logoutModal,
 .dangerModal {
-  background: #0d1220;
+  background: var(--surface-1);
   border-top: 3px solid rgba(76, 130, 251, 0.35);
   border-left: 3px solid rgba(255, 255, 255, 0.08);
   border-right: 3px solid rgba(255, 255, 255, 0.08);

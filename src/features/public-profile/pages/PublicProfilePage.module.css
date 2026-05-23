@@ -97,7 +97,7 @@
 
 .stat {
   flex: 1;
-  background: #0d1525;
+  background: var(--surface-1);
   border-radius: var(--radius-md);
   padding: 16px 20px;
   display: flex;
@@ -126,7 +126,7 @@
 
 .searchPanel {
   flex: 1;
-  background: #0d1525;
+  background: var(--surface-1);
   border-radius: var(--radius-md);
   padding: 14px 20px;
   display: flex;
@@ -190,7 +190,7 @@
 }
 
 .publicCard {
-  background: #0d1525;
+  background: var(--surface-1);
   border-radius: var(--radius-lg);
   padding: 32px;
   cursor: pointer;
@@ -278,7 +278,7 @@
   color: var(--text-tertiary);
   padding: 48px 24px;
   font-size: 14px;
-  background: #0d1525;
+  background: var(--surface-1);
   border-radius: var(--radius-lg);
   border-top: 3px solid rgba(76, 130, 251, 0.35);
   border-left: 3px solid rgba(255, 255, 255, 0.08);
@@ -302,11 +302,11 @@
   font-weight: 500;
 }
 
-/* Denied card (unchanged, but ensure consistency) */
+/* Denied card – uses same surface variable */
 .deniedCard {
   max-width: 600px;
   margin: 0 auto;
-  background: #0d1525;
+  background: var(--surface-1);
   border-radius: var(--radius-lg);
   padding: 40px;
   text-align: center;
