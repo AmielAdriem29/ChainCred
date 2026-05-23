@@ -1,7 +1,9 @@
-.overlay {
+.backdrop {
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.7);
+  background: rgba(0, 0, 0, 0.72);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -9,36 +11,40 @@
 }
 
 .modal {
-  background: var(--color-surface, #1e2330);
-  border: 1px solid var(--color-border, #2e3447);
+  background: var(--surface-1);
+  border-top: 3px solid rgba(76, 130, 251, 0.35);
+  border-left: 3px solid rgba(255, 255, 255, 0.08);
+  border-right: 3px solid rgba(255, 255, 255, 0.08);
+  border-bottom: 3px solid rgba(255, 255, 255, 0.08);
   border-radius: 16px;
-  padding: 40px 32px;
-  max-width: 420px;
-  width: 100%;
+  padding: 2rem 2rem 2rem 2rem;
+  width: min(460px, 90vw);
   display: flex;
   flex-direction: column;
-  align-items: center;
-  gap: 16px;
+  gap: 1rem;
+  box-shadow: 0 24px 48px rgba(0, 0, 0, 0.5);
+}
+
+.modalIcon {
+  font-size: 28px;
+  text-align: center;
+  margin-bottom: 0.25rem;
+}
+
+.modalTitle {
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin: 0;
   text-align: center;
 }
 
-.icon {
-  font-size: 2rem;
-  color: var(--color-warning, #f59e0b);
-}
-
-.title {
-  font-size: 1.25rem;
-  font-weight: 600;
-  color: var(--color-text, #f1f5f9);
+.modalBody {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  line-height: 1.5;
   margin: 0;
-}
-
-.message {
-  font-size: 0.9rem;
-  color: var(--color-text-muted, #94a3b8);
-  margin: 0;
-  line-height: 1.6;
+  text-align: center;
 }
 
 .walletList {
@@ -54,17 +60,21 @@
   gap: 12px;
   width: 100%;
   padding: 12px 16px;
-  background: var(--color-surface-raised, #252d3d);
-  border: 1px solid var(--color-border, #2e3447);
-  border-radius: 10px;
-  color: var(--color-text, #f1f5f9);
-  font-size: 0.9rem;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: var(--radius-md);
+  color: var(--text-primary);
+  font-size: 14px;
+  font-family: var(--font-sans);
+  font-weight: 500;
   cursor: pointer;
-  transition: border-color 0.2s;
+  transition: all 0.15s;
 }
 
 .walletBtn:hover:not(:disabled) {
-  border-color: var(--color-primary, #6366f1);
+  border-color: #2c4a8f;
+  background: rgba(44, 74, 143, 0.08);
+  transform: translateY(-1px);
 }
 
 .walletBtn:disabled {
@@ -73,27 +83,45 @@
 }
 
 .walletIcon {
-  width: 24px;
-  height: 24px;
+  width: 28px;
+  height: 28px;
   border-radius: 6px;
+  object-fit: contain;
 }
 
 .error {
-  font-size: 0.85rem;
-  color: var(--color-error, #f87171);
+  font-size: 13px;
+  color: #f87171;
+  background: rgba(239, 68, 68, 0.08);
+  border: 1px solid rgba(239, 68, 68, 0.2);
+  border-radius: var(--radius-md);
+  padding: 8px 12px;
   margin: 0;
+  text-align: center;
 }
 
-.logoutBtn {
-  background: none;
-  border: none;
-  color: var(--color-text-muted, #94a3b8);
+.modalActions {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+  margin-top: 0.5rem;
+}
+
+.modalCancelBtn {
+  flex: 1;
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: var(--radius-md);
+  color: var(--text-secondary);
   font-size: 0.85rem;
+  font-weight: 500;
+  padding: 14px 12px;
   cursor: pointer;
-  text-decoration: underline;
-  padding: 0;
+  transition: all 0.15s;
 }
 
-.logoutBtn:hover {
-  color: var(--color-text, #f1f5f9);
+.modalCancelBtn:hover {
+  border-color: rgba(255, 255, 255, 0.35);
+  color: var(--text-primary);
+  background: rgba(255, 255, 255, 0.05);
 }

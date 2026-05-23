@@ -55,11 +55,11 @@ export function WalletReconnectModal() {
   };
 
   return (
-    <div className={styles.overlay}>
+    <div className={styles.backdrop}>
       <div className={styles.modal}>
-        <div className={styles.icon}>⚠</div>
-        <h2 className={styles.title}>Wallet Disconnected</h2>
-        <p className={styles.message}>
+        <div className={styles.modalIcon}>⚠</div>
+        <h2 className={styles.modalTitle}>Wallet Disconnected</h2>
+        <p className={styles.modalBody}>
           Your wallet session has ended. Reconnect your wallet to continue,
           or log out to return to the login screen.
         </p>
@@ -80,9 +80,11 @@ export function WalletReconnectModal() {
 
         {error && <p className={styles.error}>{error}</p>}
 
-        <button className={styles.logoutBtn} onClick={handleDismiss}>
-          Log out instead
-        </button>
+        <div className={styles.modalActions}>
+          <button className={styles.modalCancelBtn} onClick={handleDismiss}>
+            Log out instead
+          </button>
+        </div>
       </div>
     </div>
   );
