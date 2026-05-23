@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { useWallet } from "@meshsdk/react";
 import { useAuth } from "../../auth";
 import styles from "./SettingsPage.module.css";
+import { TOAST_DURATION } from '../../../constants/timings';
 
 const WALLET_KEY = 'chaincred_wallet';
 
@@ -127,7 +128,7 @@ export function SettingsPage() {
                 if (!cancelled) setWalletAddress(address);
             } catch {
                 if (retries > 0 && !cancelled) {
-                    setTimeout(() => fetchAddress(retries - 1), 500);
+                    setTimeout(() => fetchAddress(retries - 1), TOAST_DURATION);
                 } else {
                     if (!cancelled) setWalletAddress(null);
                 }
@@ -143,7 +144,7 @@ export function SettingsPage() {
         if (deleted) {
             const timer = setTimeout(() => {
                 window.location.href = "/login";
-            }, 2000);
+            }, TOAST_DURATION);
             return () => clearTimeout(timer);
         }
     }, [deleted]);

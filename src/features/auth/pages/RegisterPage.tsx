@@ -4,6 +4,7 @@ import { useAuth } from '../context/useAuth';
 import type { UserProfile } from '../context/authTypes';
 import { resolveAddress } from '../../../shared/utils/walletAddress';
 import styles from './RegisterPage.module.css';
+import { WALLET_RETRY_DELAY } from '../../../constants/timings';
 
 type AccountType = 'holder' | 'organization';
 
@@ -81,7 +82,7 @@ export function RegisterPage({ onNavigateLogin }: Props) {
         if (raw) break;
       } catch {
         if (attempt < 2) {
-          await new Promise(res => setTimeout(res, 500));
+          await new Promise(res => setTimeout(res, WALLET_RETRY_DELAY));
         }
       }
     }
@@ -196,7 +197,7 @@ export function RegisterPage({ onNavigateLogin }: Props) {
                   <label className={styles.label}>Organization Name</label>
                   <input
                     className={styles.input}
-                    placeholder="Cebu Institute of Technology – University"
+                    placeholder="Eg., Cebu Institute of Technology – University"
                     value={form.organizationName}
                     onChange={e => setForm(f => ({ ...f, organizationName: e.target.value }))}
                   />

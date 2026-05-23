@@ -5,6 +5,7 @@ import { ShareModal } from '../components/ShareModal';
 import { IssuanceModal } from '../components/IssuanceModal';
 import { useModal } from '../../../shared/hooks/useModal';
 import styles from './VaultPage.module.css';
+import { TOAST_DURATION } from '../../../constants/timings';
 
 export function VaultPage() {
   const { credentials, isLoading } = useCredentials();
@@ -20,7 +21,7 @@ export function VaultPage() {
 
   const handleShared = () => {
     setShowSharedToast(true);
-    setTimeout(() => setShowSharedToast(false), 4000);
+    setTimeout(() => setShowSharedToast(false), TOAST_DURATION);
   };
 
   const filteredCredentials = credentials.filter(cred => {

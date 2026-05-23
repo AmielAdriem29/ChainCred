@@ -3,6 +3,7 @@ import { useWallet, useWalletList } from '@meshsdk/react';
 import { useAuth } from '../context/useAuth';
 import { resolveAddress } from '../../../shared/utils/walletAddress';
 import styles from './WalletReconnectModal.module.css';
+import { WALLET_RECONNECT_DELAY } from '../../../constants/timings';
 
 const WALLET_KEY = 'chaincred_wallet';
 
@@ -43,7 +44,7 @@ export function WalletReconnectModal() {
           setError('Failed to get wallet address. Please try again.');
           setConnecting(false);
         }
-      }, 500);
+      }, WALLET_RECONNECT_DELAY);
     } catch {
       setError('Failed to reconnect. Please try again.');
       setConnecting(false);

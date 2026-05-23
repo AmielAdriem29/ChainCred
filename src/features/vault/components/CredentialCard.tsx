@@ -7,6 +7,7 @@ import { useAuth } from '../../auth';
 import { previewCredentialFile } from '../../../shared/utils/filePreview';
 import styles from './CredentialCard.module.css';
 import { resolveAddress } from '../../../shared/utils/walletAddress';
+import { TOAST_DURATION } from '../../../constants/timings';
 
 interface Props {
   credential: Credential;
@@ -262,7 +263,7 @@ export function CredentialCard({ credential }: Props) {
           onDeleted={() => {
             setShowDeleteModal(false);
             setShowDeleted(true);
-            setTimeout(() => setShowDeleted(false), 3000);
+            setTimeout(() => setShowDeleted(false), TOAST_DURATION);
           }}
         />
       )}

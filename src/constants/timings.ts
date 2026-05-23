@@ -1,0 +1,4 @@
+export const TOAST_DURATION = 3000;
+export const WALLET_CHECK_DELAY = 1000;
+export const WALLET_RECONNECT_DELAY = 500;
+export const WALLET_RETRY_DELAY = 500;

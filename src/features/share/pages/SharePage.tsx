@@ -7,6 +7,7 @@ import { useModal } from '../../../shared/hooks/useModal';
 import { ShareModal } from "../../vault/components/ShareModal";
 import { loadShareLinks, setShareLinkStatus, createShareUrl } from '../../../shared/utils/shareLinks';
 import styles from './SharePage.module.css';
+import { TOAST_DURATION } from '../../../constants/timings';
 
 function formatWalletAddress(walletAddress: string): string {
   if (walletAddress.length <= 14) return walletAddress;
@@ -70,7 +71,7 @@ export function SharePage() {
     const url = createShareUrl(wallet, p.token);
     await navigator.clipboard.writeText(url);
     setToast('Link copied! You can manage access anytime from the Share Center.');
-    setTimeout(() => setToast(''), 3500);
+    setTimeout(() => setToast(''), TOAST_DURATION);
   };
 
   const handleModalSuccess = () => {

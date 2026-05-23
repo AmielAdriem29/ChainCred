@@ -2,6 +2,7 @@ import { useState, useMemo, useEffect, useRef } from 'react';
 import type { ReactNode } from 'react';
 import { AuthContext } from './authContext';
 import type { UserProfile } from './authTypes';
+import { WALLET_CHECK_DELAY } from '../../../constants/timings';
 
 const STORAGE_KEY = 'chaincred_users';
 const SESSION_KEY = 'chaincred_session';
@@ -66,7 +67,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       }
     };
 
-    const timer = setTimeout(checkWalletConnection, 1000);
+    const timer = setTimeout(checkWalletConnection, WALLET_CHECK_DELAY);
     return () => {
       cancelled = true;
       clearTimeout(timer);
