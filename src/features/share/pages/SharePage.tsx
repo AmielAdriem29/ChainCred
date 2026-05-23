@@ -1,8 +1,10 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useState, useMemo } from 'react';
 import { useCredentials } from '../../credentials/context/useCredentials';
 import type { ShareLinkRecord } from '../../../shared/types/index.ts';
 import { StatusBadge } from '../../../shared/components/ui/StatusBadge';
 import { Toggle } from '../../../shared/components/ui/Toggle';
+import { useModal } from '../../../shared/hooks/useModal';
+import { ShareModal } from "../../vault/components/ShareModal";
 import { loadShareLinks, setShareLinkStatus, createShareUrl } from '../../../shared/utils/shareLinks';
 import styles from './SharePage.module.css';
 
@@ -13,7 +15,9 @@ function formatWalletAddress(walletAddress: string): string {
 
 export function SharePage() {
   const { wallet } = useCredentials();
+  const shareModal = useModal();
   const [permissions, setPermissions] = useState<ShareLinkRecord[]>([]);
+  const [searchQuery, setSearchQuery] = useState('');
   const [toast, setToast] = useState('');
 
   const refreshPermissions = useCallback(() => {
@@ -69,6 +73,19 @@ export function SharePage() {
     setTimeout(() => setToast(''), 3500);
   };
 
+  const handleModalSuccess = () => {
+    refreshPermissions();
+  };
+
+  const totalLinks = permissions.length;
+  const activeLinks = permissions.filter(p => p.status === 'active').length;
+
+  const filteredPermissions = useMemo(() => {
+    return permissions.filter(p =>
+      p.recipientName.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+  }, [permissions, searchQuery]);
+
   return (
     <div className={styles.page}>
       {toast && (
@@ -78,60 +95,118 @@ export function SharePage() {
         </div>
       )}
 
-      <div className={styles.topbar}>
-        <h2 className={styles.heading}>Share Center</h2>
+      <div className={styles.rowOne}>
+        <div className={styles.headerArea}>
+          <h2 className={styles.heading}>Share Center</h2>
+        </div>
+        <button className={styles.primaryBtn} onClick={shareModal.open}>
+          {/* New SVG: share portfolio icon (three circles + connecting lines) */}
+          <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="2">
+            <circle cx="12" cy="4" r="2" />
+            <circle cx="4" cy="8" r="2" />
+            <circle cx="12" cy="12" r="2" />
+            <path d="M6 7l4-2M6 9l4 2" />
+          </svg>
+          Generate Link
+        </button>
       </div>
 
-      <div className={styles.contentArea}>
-        <div className={styles.sectionTitle}>Active access permissions</div>
-
-        {!wallet && (
-          <p className={styles.hint}>Connect your wallet to manage public profile access.</p>
-        )}
-
-        <div className={styles.tableWrap}>
-          <table className={styles.table}>
-            <thead>
-              <tr>
-                <th>Recipient</th>
-                <th>Date Granted</th>
-                <th>Status</th>
-                <th>Access</th>
-                <th>Copy Link</th>
-              </tr>
-            </thead>
-            <tbody>
-              {permissions.map(p => (
-                <tr key={p.token}>
-                  <td>
-                    <strong className={styles.name}>{p.recipientName}</strong>
-                    <span className={styles.wallet} title={p.walletAddress}>
-                      {formatWalletAddress(p.walletAddress)}
-                    </span>
-                  </td>
-                  <td>{new Date(p.createdAt).toLocaleDateString()}</td>
-                  <td><StatusBadge status={p.status} /></td>
-                  <td><Toggle enabled={p.status === 'active'} onChange={val => toggle(p.token, val)} /></td>
-                  <td>
-                    <button className={styles.copyBtn} onClick={() => handleCopy(p)}>
-                      Copy
-                    </button>
-                  </td>
-                </tr>
-              ))}
-              {permissions.length === 0 && (
-                <tr>
-                  <td colSpan={5} className={styles.emptyState}>
-                    No share links created yet. Use "Share Portfolio" to generate one.
-                  </td>
-                </tr>
-              )}
-            </tbody>
-          </table>
+      <div className={styles.rowTwo}>
+        <div className={styles.statsPanel}>
+          <div className={styles.stat}>
+            <div className={styles.statLabel}>Total Links</div>
+            <div className={styles.statValue}>{totalLinks}</div>
+          </div>
+          <div className={styles.stat}>
+            <div className={styles.statLabel}>Active Links</div>
+            <div className={`${styles.statValue} ${styles.blueTheme}`}>{activeLinks}</div>
+          </div>
         </div>
 
-        <p className={styles.hint}>Revoking access immediately invalidates the link for that recipient.</p>
+        <div className={styles.searchPanel}>
+          <input
+            type="text"
+            className={styles.searchInput}
+            placeholder="Search by recipient name..."
+            value={searchQuery}
+            onChange={e => setSearchQuery(e.target.value)}
+          />
+        </div>
       </div>
+
+      <div className={styles.rowThree}>
+        <div className={styles.sectionTitle}>Active access permissions</div>
+        <div className={styles.sectionCount}>
+          {filteredPermissions.length} {filteredPermissions.length === 1 ? 'link' : 'links'} found
+        </div>
+      </div>
+
+      <div className={styles.tableCard}>
+        {!wallet ? (
+          <div className={styles.emptyState}>
+            Connect your wallet to manage public profile access.
+          </div>
+        ) : filteredPermissions.length === 0 ? (
+          <div className={styles.emptyState}>
+            {permissions.length === 0 
+              ? 'No share links created yet. Use "Generate Link" above to build one.' 
+              : 'No matches found for your recipient name search.'}
+          </div>
+        ) : (
+          <div className={styles.tableWrap}>
+            <table className={styles.table}>
+              <thead>
+                <tr>
+                  <th>Recipient</th>
+                  <th>Date Granted</th>
+                  <th>Status</th>
+                  <th style={{ textAlign: 'center' }}>Access</th>
+                  <th style={{ textAlign: 'center' }}>Copy Link</th>
+                </tr>
+              </thead>
+              <tbody>
+                {filteredPermissions.map(p => (
+                  <tr key={p.token}>
+                    <td>
+                      <strong className={styles.name}>{p.recipientName}</strong>
+                      <span className={styles.wallet} title={p.walletAddress}>
+                        {formatWalletAddress(p.walletAddress)}
+                      </span>
+                    </td>
+                    <td className={styles.dateCell}>
+                      {new Date(p.createdAt).toLocaleDateString(undefined, {
+                        month: 'short',
+                        day: 'numeric',
+                        year: 'numeric'
+                      })}
+                    </td>
+                    <td><StatusBadge status={p.status} /></td>
+                    <td className={styles.toggleCell}>
+                      <div className={styles.toggleWrapper}>
+                        <Toggle enabled={p.status === 'active'} onChange={val => toggle(p.token, val)} />
+                      </div>
+                    </td>
+                    <td style={{ textAlign: 'center' }}>
+                      <button className={styles.copyBtn} onClick={() => handleCopy(p)}>
+                        Copy
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
+      </div>
+
+      <p className={styles.hint}>Revoking access immediately invalidates the link for that recipient.</p>
+
+      <ShareModal
+        key={shareModal.isOpen ? 'open' : 'closed'}
+        isOpen={shareModal.isOpen}
+        onClose={shareModal.close}
+        onShared={handleModalSuccess}
+      />
     </div>
   );
 }
