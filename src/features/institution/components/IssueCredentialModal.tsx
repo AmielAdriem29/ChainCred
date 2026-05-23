@@ -1,4 +1,4 @@
-import { useState, useRef, useCallback, useEffect } from 'react';
+import { useState, useRef, useCallback, useEffect, useMemo } from 'react';
 import { useAuth } from '../../auth/context/useAuth';
 import type { UserProfile } from '../../auth/context/authTypes';
 import type { Credential } from '../../../shared/types';
@@ -110,10 +110,20 @@ export function IssueCredentialModal({ isOpen, onClose }: Props) {
 
   // Recipient search
   const [query, setQuery] = useState('');
-  const [suggestions, setSuggestions] = useState<Recipient[]>([]);
   const [recipient, setRecipient] = useState<Recipient | null>(null);
-  const [showDropdown, setShowDropdown] = useState(false);
   const searchRef = useRef<HTMLDivElement>(null);
+
+  // Derived — no separate state needed
+  const suggestions = useMemo(() => {
+    if (!query.trim()) return [];
+    const q = query.toLowerCase();
+    return getHolderAccounts()
+      .filter(u => u.email.toLowerCase().includes(q) || u.name.toLowerCase().includes(q))
+      .slice(0, 6)
+      .map(u => ({ walletAddress: u.walletAddress, name: u.name, email: u.email }));
+  }, [query]);
+
+  const showDropdown = suggestions.length > 0;
 
   // Credential fields
   const [credName, setCredName] = useState('');
@@ -128,29 +138,13 @@ export function IssueCredentialModal({ isOpen, onClose }: Props) {
   const [txHash, setTxHash] = useState('');
   const [ipfsCid, setIpfsCid] = useState('');
 
-  // ── Recipient search ──────────────────────────────────────────────────────
+  // ── Close dropdown on outside click ──────────────────────────────────────
 
-  useEffect(() => {
-    if (!query.trim()) {
-      setSuggestions([]);
-      setShowDropdown(false);
-      return;
-    }
-    const q = query.toLowerCase();
-    const matches = getHolderAccounts()
-      .filter(u => u.email.toLowerCase().includes(q) || u.name.toLowerCase().includes(q))
-      .slice(0, 6)
-      .map(u => ({ walletAddress: u.walletAddress, name: u.name, email: u.email }));
-    setSuggestions(matches);
-    setShowDropdown(matches.length > 0);
-  }, [query]);
-
-  // Close dropdown on outside click
   useEffect(() => {
     if (!showDropdown) return;
     const handler = (e: MouseEvent) => {
       if (searchRef.current && !searchRef.current.contains(e.target as Node)) {
-        setShowDropdown(false);
+        setQuery('');
       }
     };
     document.addEventListener('mousedown', handler);
@@ -160,7 +154,6 @@ export function IssueCredentialModal({ isOpen, onClose }: Props) {
   const selectRecipient = (r: Recipient) => {
     setRecipient(r);
     setQuery('');
-    setShowDropdown(false);
   };
 
   // ── File handling ─────────────────────────────────────────────────────────
@@ -276,9 +269,7 @@ export function IssueCredentialModal({ isOpen, onClose }: Props) {
 
   const handleClose = () => {
     setQuery('');
-    setSuggestions([]);
     setRecipient(null);
-    setShowDropdown(false);
     setCredName('');
     setIssueDate(todayStr);
     setFile(null);
@@ -332,7 +323,6 @@ export function IssueCredentialModal({ isOpen, onClose }: Props) {
                     placeholder="Search by email or name…"
                     value={query}
                     onChange={e => setQuery(e.target.value)}
-                    onFocus={() => suggestions.length > 0 && setShowDropdown(true)}
                     autoComplete="off"
                   />
                   {showDropdown && (
