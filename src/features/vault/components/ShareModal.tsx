@@ -87,7 +87,7 @@ export function ShareModal({ isOpen, onClose, onShared }: Props) {
             onClick={handleConfirm}
             disabled={!wallet}
           >
-            Generate &amp; Copy Link
+            Generate Link
           </button>
         </div>
       </div>
