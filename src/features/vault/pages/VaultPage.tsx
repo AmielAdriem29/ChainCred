@@ -96,12 +96,22 @@ export function VaultPage() {
       </div>
 
       {isLoading ? (
-        <div style={{ color: 'var(--text-tertiary)', fontSize: '16px', padding: '24px 0' }}>Loading credentials…</div>
+        <div className={styles.loadingState}>Loading credentials…</div>
       ) : filteredCredentials.length === 0 ? (
-        <div style={{ color: 'var(--text-tertiary)', fontSize: '16px', padding: '48px 0', textAlign: 'center' }}>
-          <div style={{ fontSize: '32px', marginBottom: '12px' }}>📂</div>
-          <div>
-            {credentials.length === 0 ? "No credentials yet. Upload your first one above." : "No matches found for your active search layout filters."}
+        <div className={styles.emptyState}>
+          <div className={styles.emptyIcon}>
+            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+              <path d="M4 4h16v16H4z" />
+              <path d="M8 8h8M8 12h6M8 16h4" />
+            </svg>
+          </div>
+          <div className={styles.emptyTitle}>
+            {credentials.length === 0 ? 'No credentials yet' : 'No matches found'}
+          </div>
+          <div className={styles.emptyDescription}>
+            {credentials.length === 0
+              ? 'Upload your first credential using the button above.'
+              : 'Try adjusting your search or filter settings.'}
           </div>
         </div>
       ) : (
