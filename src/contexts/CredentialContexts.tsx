@@ -1,5 +1,3 @@
-// contexts/CredentialContext.tsx
-
 import { useState, useEffect, useCallback } from "react";
 import type { ReactNode } from "react";
 import {
@@ -15,17 +13,12 @@ import {
 import { CredentialContext } from "../hooks/useCredentialContext";
 import type { Credential } from "../hooks/useCredentialContext";
 
-// ----------------------------------------------------------------------
-// Provider
-// ----------------------------------------------------------------------
 export const CredentialProvider = ({ children }: { children: ReactNode }) => {
   const [wallet, setWallet] = useState<string | null>(null);
   const [credentials, setCredentials] = useState<Credential[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
-  // ------------------------------------------------------------------
-  // 1. HYDRATION: load wallet + credentials from storage on mount
-  // ------------------------------------------------------------------
+  // Load wallet and credentials from storage on mount
   useEffect(() => {
     const hydrate = async () => {
       setIsLoading(true);
@@ -37,14 +30,8 @@ export const CredentialProvider = ({ children }: { children: ReactNode }) => {
         if (Array.isArray(meta)) {
           for (const item of meta) {
             if (item && typeof item === "object" && "id" in item) {
-              const blob = await loadCredentialFile(
-                savedWallet,
-                (item as Credential).id,
-              );
-              hydrated.push({
-                ...item,
-                fileBlob: blob || undefined,
-              } as Credential);
+              const blob = await loadCredentialFile(savedWallet, (item as Credential).id);
+              hydrated.push({ ...item, fileBlob: blob || undefined } as Credential);
             }
           }
         }
@@ -55,9 +42,7 @@ export const CredentialProvider = ({ children }: { children: ReactNode }) => {
     hydrate();
   }, []);
 
-  // ------------------------------------------------------------------
-  // 2. AUTO‑SYNC: whenever credentials change, save metadata to storage
-  // ------------------------------------------------------------------
+  // Auto‑sync metadata to storage whenever credentials change
   useEffect(() => {
     if (wallet && !isLoading) {
       const meta = credentials.map((cred) => ({
@@ -73,9 +58,6 @@ export const CredentialProvider = ({ children }: { children: ReactNode }) => {
     }
   }, [credentials, wallet, isLoading]);
 
-  // ------------------------------------------------------------------
-  // 3. Connect wallet (used after login / register)
-  // ------------------------------------------------------------------
   const connectWallet = useCallback(async (address: string) => {
     setCurrentWallet(address);
     setWallet(address);
@@ -84,10 +66,7 @@ export const CredentialProvider = ({ children }: { children: ReactNode }) => {
     if (Array.isArray(meta)) {
       for (const item of meta) {
         if (item && typeof item === "object" && "id" in item) {
-          const blob = await loadCredentialFile(
-            address,
-            (item as Credential).id,
-          );
+          const blob = await loadCredentialFile(address, (item as Credential).id);
           hydrated.push({ ...item, fileBlob: blob || undefined } as Credential);
         }
       }
@@ -95,9 +74,6 @@ export const CredentialProvider = ({ children }: { children: ReactNode }) => {
     setCredentials(hydrated);
   }, []);
 
-  // ------------------------------------------------------------------
-  // 4. Add a new credential (metadata + file blob)
-  // ------------------------------------------------------------------
   const addCredential = useCallback(
     async (credData: Omit<Credential, "id" | "fileBlob">, file: File) => {
       if (!wallet) throw new Error("No wallet connected");
@@ -116,24 +92,18 @@ export const CredentialProvider = ({ children }: { children: ReactNode }) => {
       await saveCredentialFile(wallet, id, file);
       setCredentials((prev) => [...prev, newCredential]);
     },
-    [wallet],
+    [wallet]
   );
 
-  // ------------------------------------------------------------------
-  // 5. Remove a credential (metadata + file)
-  // ------------------------------------------------------------------
   const removeCredential = useCallback(
     async (id: string) => {
       if (!wallet) return;
       await deleteCredentialFile(wallet, id);
       setCredentials((prev) => prev.filter((c) => c.id !== id));
     },
-    [wallet],
+    [wallet]
   );
 
-  // ------------------------------------------------------------------
-  // 6. Logout: wipe all storage for this wallet and reset state
-  // ------------------------------------------------------------------
   const logout = useCallback(async () => {
     if (wallet) {
       await deleteEntireWallet(wallet);
@@ -152,9 +122,5 @@ export const CredentialProvider = ({ children }: { children: ReactNode }) => {
     logout,
   };
 
-  return (
-    <CredentialContext.Provider value={value}>
-      {children}
-    </CredentialContext.Provider>
-  );
+  return <CredentialContext.Provider value={value}>{children}</CredentialContext.Provider>;
 };
