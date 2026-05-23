@@ -154,7 +154,23 @@ function DeleteModal({
 export function CredentialCard({ credential }: Props) {
   const { updateCredential } = useCredentials();
   const { user } = useAuth();
-  const { id, name, organization, year, logoText, logoColor, logoTextColor, status, txHash, blockNumber, issuedDate, fileKey, fileName, fileType, ipfsGatewayUrl } = credential;
+  const {
+    id,
+    name,
+    organization,
+    year,
+    logoText,
+    logoColor,
+    logoTextColor,
+    status,
+    txHash,
+    blockNumber,
+    issuedDate,
+    fileKey,
+    fileName,
+    fileType,
+    ipfsGatewayUrl,
+  } = credential;
 
   const [editing, setEditing] = useState(false);
   const [editName, setEditName] = useState(name);
@@ -252,27 +268,39 @@ export function CredentialCard({ credential }: Props) {
       )}
 
       <div className={styles.card}>
-        <div className={styles.logo} style={{ background: logoColor, color: logoTextColor }}>
+        <div
+          className={styles.logo}
+          style={{
+            background: logoColor || '#1a2c4e',
+            color: logoTextColor || '#ffffff',
+          }}
+        >
           {logoText}
         </div>
         <div className={styles.mainColumn}>
           <div className={styles.detailsHeader}>
             <div className={styles.details}>
-              <div className={styles.name} title={name}>{name}</div>
-              <div className={styles.inst} title={organization}>{organization} · {year}</div>
+              <div className={styles.name} title={name}>
+                {name}
+              </div>
+              <div className={styles.inst} title={organization}>
+                {organization} · {year}
+              </div>
               <div className={styles.date}>
                 {getDateLabel()}
                 {blockNumber ? `Block #${blockNumber}` : issuedDate}
               </div>
               {txHash && (
                 <div style={{ marginTop: '6px' }}>
-                  <button 
-                    className={`${styles.hash} ${isFullHash ? styles.hashClickable : ''}`} 
+                  <button
+                    className={`${styles.hash} ${isFullHash ? styles.hashClickable : ''}`}
                     onClick={handleHashCopy}
                     disabled={!isFullHash}
                   >
                     <span>{displayHash}</span>
-                    {isFullHash && <span className={styles.hashCopyHint}>{hashCopied ? ' ✓' : ' 📋'}</span>}
+                    {isFullHash && (
+                      <span className={styles.hashCopyHint}>{hashCopied ? ' ✓' : ' 📋'}</span>
+                    )}
                   </button>
                 </div>
               )}
@@ -281,7 +309,9 @@ export function CredentialCard({ credential }: Props) {
           </div>
           <div className={styles.cardActions}>
             {status === 'pending' && (
-              <button className={styles.actionBtn} onClick={() => setEditing(true)}>Edit</button>
+              <button className={styles.actionBtn} onClick={() => setEditing(true)}>
+                Edit
+              </button>
             )}
             {status === 'verified' && (ipfsGatewayUrl || (fileKey && fileName && fileType)) && (
               <button className={styles.actionBtn} onClick={handleViewDocument} disabled={previewLoading}>
@@ -298,7 +328,10 @@ export function CredentialCard({ credential }: Props) {
                 Scan ↗
               </a>
             )}
-            <button className={`${styles.actionBtn} ${styles.actionBtnDanger}`} onClick={() => setShowDeleteModal(true)}>
+            <button
+              className={`${styles.actionBtn} ${styles.actionBtnDanger}`}
+              onClick={() => setShowDeleteModal(true)}
+            >
               Delete
             </button>
           </div>
