@@ -1,6 +1,8 @@
 .sidebar {
   width: var(--sidebar-width);
   background: rgba(13, 17, 23, 0.6);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
   border-right: 1px solid rgba(255, 255, 255, 0.03);
   padding: 2rem 1.25rem;
   display: flex;
@@ -12,19 +14,27 @@
 
 .logo {
   font-family: var(--font-sans);
-  font-size: 18px;
-  font-weight: 600;
+  font-size: 20px;
+  font-weight: 700;
   color: #ffffff;
   padding: 0 0.5rem 1.75rem;
   border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-  margin-bottom: 1.25rem;
+  margin-bottom: 1.5rem;
   letter-spacing: 1px;
   text-transform: uppercase;
+  text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
 }
 
 .logo span {
-  color: var(--brand-light);
-  filter: drop-shadow(0 0 8px rgba(55, 138, 221, 0.3));
+  background: linear-gradient(135deg, #4c82fb, #2c4a8f);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  filter: drop-shadow(0 0 6px rgba(76, 130, 251, 0.3));
 }
 
 .nav {
@@ -36,10 +46,11 @@
 
 .navItem {
   width: 100%;
-  padding: 13px 16px;
+  padding: 12px 16px;
   border-radius: var(--radius-md);
-  font-size: 16px;
+  font-size: 14px;
   font-family: var(--font-sans);
+  font-weight: 500;
   color: var(--text-tertiary);
   cursor: pointer;
   display: flex;
@@ -48,35 +59,115 @@
   transition: all 0.2s ease;
   background: transparent;
   border: none;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Subtle gradient overlay on hover */
+.navItem::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: radial-gradient(circle at left, rgba(76, 130, 251, 0.08), transparent);
+  opacity: 0;
+  transition: opacity 0.25s ease;
+  pointer-events: none;
+}
+
+.navItem:hover::before {
+  opacity: 1;
 }
 
 .navItem:hover {
-  background: rgba(255, 255, 255, 0.03);
   color: #ffffff;
+  transform: translateX(2px);
 }
 
 .navItem.active {
-  background: rgba(55, 138, 221, 0.08);
+  background: linear-gradient(90deg, rgba(44, 74, 143, 0.12), rgba(44, 74, 143, 0.02));
   color: #ffffff;
-  font-weight: 500;
-  box-shadow: inset 0 0 0 1px rgba(55, 138, 221, 0.2);
+  font-weight: 600;
+  box-shadow: inset 0 0 0 1px rgba(76, 130, 251, 0.25), 0 2px 6px rgba(0, 0, 0, 0.2);
+  border-left: 2px solid #4c82fb;
 }
 
 .navIcon {
-  width: 22px;
-  height: 22px;
+  width: 20px;
+  height: 20px;
   flex-shrink: 0;
-  opacity: 0.5;
-  transition: opacity 0.2s;
+  opacity: 0.6;
+  transition: opacity 0.2s, transform 0.2s;
+}
+
+.navItem:hover .navIcon {
+  opacity: 1;
+  transform: scale(1.05);
 }
 
 .active .navIcon {
   opacity: 1;
-  color: var(--brand-light);
+  color: #4c82fb;
+  filter: drop-shadow(0 0 2px rgba(76, 130, 251, 0.5));
 }
 
 .bottomNav {
   border-top: 1px solid rgba(255, 255, 255, 0.05);
   padding-top: 16px;
   margin-top: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+/* User info styles */
+.userInfo {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 8px;
+  border-radius: var(--radius-md);
+  background: rgba(255, 255, 255, 0.02);
+  margin-bottom: 4px;
+}
+
+.userAvatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #2c4a8f, #1a2c4e);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  font-size: 16px;
+  color: #ffffff;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  flex-shrink: 0;
+}
+
+.userDetails {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  overflow: hidden;
+}
+
+.userName {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.userType {
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--text-tertiary);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
 }

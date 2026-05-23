@@ -108,8 +108,15 @@ function NavItem({
 
 export function Sidebar({ active, onNavigate }: Props) {
   const { user } = useAuth();
-  const isOrganization = user?.accountType === 'organization'; // ← changed
-  const navItems = isOrganization ? INSTITUTION_NAV : HOLDER_NAV; // ← changed
+  const isOrganization = user?.accountType === 'organization';
+  const navItems = isOrganization ? INSTITUTION_NAV : HOLDER_NAV;
+
+  // Get display name for user
+  const displayName = isOrganization
+    ? (user?.organizationName || user?.name || 'Organization')
+    : (user?.name || user?.email?.split('@')[0] || 'User');
+
+  const initial = displayName.charAt(0).toUpperCase();
 
   return (
     <aside className={styles.sidebar}>
@@ -129,6 +136,16 @@ export function Sidebar({ active, onNavigate }: Props) {
       </nav>
 
       <div className={styles.bottomNav}>
+        {/* User info section */}
+        <div className={styles.userInfo}>
+          <div className={styles.userAvatar}>
+            <span>{initial}</span>
+          </div>
+          <div className={styles.userDetails}>
+            <span className={styles.userName}>{displayName}</span>
+            <span className={styles.userType}>{isOrganization ? 'Organization' : 'Holder'}</span>
+          </div>
+        </div>
         <NavItem
           item={SETTINGS_ITEM}
           isActive={active === 'settings'}
