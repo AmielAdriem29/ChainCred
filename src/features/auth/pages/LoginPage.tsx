@@ -45,14 +45,12 @@ export function LoginPage({ onNavigateRegister }: Props) {
       }
 
       const address = resolveAddress(raw);
-      console.log('resolved address:', address);
 
       const profile = login(address);
       if (!profile) {
         setError('No account found for this wallet. Please register first.');
       }
-    } catch (e) {
-      console.error(e);
+    } catch {
       setError('Could not retrieve wallet address. Try reconnecting.');
     }
   };
