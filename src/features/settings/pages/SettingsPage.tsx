@@ -36,7 +36,6 @@ function Field({
                 onChange={readOnly ? undefined : (e) => onChange?.(e.target.value)}
                 placeholder={placeholder}
                 readOnly={readOnly}
-                style={readOnly ? { opacity: 0.7 } : undefined}
             />
         </div>
     );
@@ -46,15 +45,15 @@ function LogoutModal({ onCancel, onConfirm }: { onCancel: () => void; onConfirm:
     return (
         <div className={styles.backdrop} onClick={onCancel}>
             <div className={styles.logoutModal} onClick={(e) => e.stopPropagation()}>
-                <h2 className={styles.logoutModalTitle}>Log out?</h2>
-                <p className={styles.logoutModalBody}>
+                <h2 className={styles.modalTitle}>Log out?</h2>
+                <p className={styles.modalBody}>
                     This will disconnect your wallet and end your session. Your credentials will stay saved.
                 </p>
-                <div className={styles.logoutModalActions}>
-                    <button className={styles.cancelBtn} onClick={onCancel}>
+                <div className={styles.modalActions}>
+                    <button className={styles.modalCancelBtn} onClick={onCancel}>
                         Cancel
                     </button>
-                    <button className={styles.logoutConfirmBtn} onClick={onConfirm}>
+                    <button className={styles.modalConfirmBtn} onClick={onConfirm}>
                         Log Out
                     </button>
                 </div>
@@ -71,8 +70,8 @@ function DeleteModal({ onCancel, onConfirm }: { onCancel: () => void; onConfirm:
         <div className={styles.backdrop} onClick={onCancel}>
             <div className={styles.dangerModal} onClick={(e) => e.stopPropagation()}>
                 <div className={styles.dangerIcon}>⚠</div>
-                <h2 className={styles.dangerTitle}>Delete account?</h2>
-                <p className={styles.dangerBody}>
+                <h2 className={styles.modalTitle}>Delete account?</h2>
+                <p className={styles.modalBody}>
                     This permanently wipes all profile data from local storage{" "}
                     <strong>and</strong> submits a blockchain nullification record.
                 </p>
@@ -86,14 +85,15 @@ function DeleteModal({ onCancel, onConfirm }: { onCancel: () => void; onConfirm:
                     placeholder="DELETE"
                     autoFocus
                 />
-                <div className={styles.dangerActions}>
-                    <button className={styles.cancelBtn} onClick={onCancel}>
+                <div className={styles.modalActions}>
+                    <button className={styles.modalCancelBtn} onClick={onCancel}>
                         Cancel
                     </button>
                     <button
-                        className={styles.deleteConfirmBtn}
+                        className={styles.modalConfirmBtn}
                         disabled={!confirmed}
                         onClick={onConfirm}
+                        style={{ background: confirmed ? '#e05252' : undefined }}
                     >
                         Permanently delete
                     </button>
@@ -182,31 +182,23 @@ export function SettingsPage() {
 
     return (
         <div className={styles.page}>
-            <div className={styles.topbar}>
-                <h2 className={styles.heading}>Settings</h2>
+            <div className={styles.rowOne}>
+                <div className={styles.headerArea}>
+                    <h2 className={styles.heading}>Settings</h2>
+                </div>
             </div>
 
             <div className={styles.contentArea}>
-
-                {/* ── Profile ── */}
+                {/* Profile Card */}
                 <section className={styles.card}>
                     <SectionHeader label="Profile" />
                     <div className={styles.fieldGrid}>
-                        <Field
-                            label="Name"
-                            value={user?.name ?? ""}
-                            readOnly
-                        />
-                        <Field
-                            label="Email"
-                            value={user?.email ?? ""}
-                            type="email"
-                            readOnly
-                        />
+                        <Field label="Name" value={user?.name ?? ""} readOnly />
+                        <Field label="Email" value={user?.email ?? ""} type="email" readOnly />
                     </div>
                 </section>
 
-                {/* ── Connected wallet ── */}
+                {/* Connected Wallet Card */}
                 <section className={styles.card}>
                     <SectionHeader label="Connected wallet" />
                     {(() => {
@@ -240,7 +232,7 @@ export function SettingsPage() {
                     })()}
                 </section>
 
-                {/* ── Session ── */}
+                {/* Session Card */}
                 <section className={styles.card}>
                     <SectionHeader label="Session" />
                     <p className={styles.emptyHint}>
@@ -251,15 +243,13 @@ export function SettingsPage() {
                     </button>
                 </section>
 
-                {/* ── Danger zone ── */}
-                <section className={styles.dangerZone}>
-                    <div className={styles.dangerZoneHeader}>
-                        <span className={styles.dangerZoneTitle}>Danger zone</span>
-                    </div>
-                    <div className={styles.dangerZoneBody}>
+                {/* Danger Zone Card (styled consistently) */}
+                <section className={styles.dangerCard}>
+                    <SectionHeader label="Danger zone" />
+                    <div className={styles.dangerBody}>
                         <div>
-                            <p className={styles.dangerZoneLabel}>Delete account</p>
-                            <p className={styles.dangerZoneDesc}>
+                            <p className={styles.dangerLabel}>Delete account</p>
+                            <p className={styles.dangerDesc}>
                                 Permanently removes all profile data from this browser and writes
                                 a nullification record to the Cardano blockchain.
                             </p>
@@ -272,17 +262,11 @@ export function SettingsPage() {
             </div>
 
             {logoutOpen && (
-                <LogoutModal
-                    onCancel={() => setLogoutOpen(false)}
-                    onConfirm={handleLogout}
-                />
+                <LogoutModal onCancel={() => setLogoutOpen(false)} onConfirm={handleLogout} />
             )}
 
             {deleteOpen && (
-                <DeleteModal
-                    onCancel={() => setDeleteOpen(false)}
-                    onConfirm={handleDelete}
-                />
+                <DeleteModal onCancel={() => setDeleteOpen(false)} onConfirm={handleDelete} />
             )}
         </div>
     );
