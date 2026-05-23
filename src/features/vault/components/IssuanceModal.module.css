@@ -13,7 +13,6 @@
 
 .modal {
   background: #0d1220;
-  border: 0.5px solid rgba(255, 255, 255, 0.1);
   border-radius: 20px;
   padding: 36px;
   width: min(560px, 100%);
@@ -23,6 +22,12 @@
   display: flex;
   flex-direction: column;
   gap: 18px;
+
+  /* 3px thick two-tone border layout configuration */
+  border-top: 3px solid rgba(76, 130, 251, 0.35);
+  border-left: 3px solid rgba(255, 255, 255, 0.08);
+  border-right: 3px solid rgba(255, 255, 255, 0.08);
+  border-bottom: 3px solid rgba(255, 255, 255, 0.08);
 }
 
 .header {
@@ -85,7 +90,7 @@
   color-scheme: dark;
 }
 
-.input:focus { border-color: var(--brand-primary); }
+.input:focus { border-color: #2c4a8f; } 
 .input::placeholder { color: var(--text-tertiary); }
 
 /* Dropzone */
@@ -104,8 +109,8 @@
 }
 
 .dropzone:hover, .dragOver {
-  border-color: var(--brand-primary);
-  background: var(--brand-subtle);
+  border-color: #2c4a8f; 
+  background: rgba(44, 74, 143, 0.08); 
 }
 
 .dropIcon { font-size: 24px; color: var(--text-tertiary); }
@@ -114,7 +119,7 @@
 
 /* File preview */
 .filePreview {
-  border: 0.5px solid rgba(55, 138, 221, 0.3);
+  border: 0.5px solid rgba(44, 74, 143, 0.4); 
   border-radius: 12px;
   overflow: hidden;
   background: rgba(255, 255, 255, 0.02);
@@ -214,7 +219,7 @@
 }
 
 .dateInput:hover, .dateInputOpen {
-  border-color: var(--brand-primary);
+  border-color: #2c4a8f; 
 }
 
 .dateValue { font-size: 15px; color: var(--text-primary); }
@@ -307,13 +312,13 @@
 }
 
 .dateCellSelected {
-  background: var(--brand-primary) !important;
+  background: #2c4a8f !important; 
   color: #fff !important;
   font-weight: 500;
 }
 
 .dateCellToday {
-  color: var(--brand-light);
+  color: #365aa9; 
   font-weight: 500;
 }
 
@@ -357,7 +362,7 @@
 }
 
 .btnPrimary {
-  background: var(--brand-primary);
+  background: #2c4a8f; 
   border: none;
   border-radius: var(--radius-md);
   color: #fff;
@@ -369,7 +374,7 @@
   transition: background 0.15s;
 }
 
-.btnPrimary:hover { background: #2271c3; }
+.btnPrimary:hover { background: #365aa9; } 
 
 /* Processing */
 .processing {
@@ -383,8 +388,8 @@
 .spinner {
   width: 40px;
   height: 40px;
-  border: 2.5px solid rgba(55, 138, 221, 0.2);
-  border-top-color: var(--brand-primary);
+  border: 2.5px solid rgba(44, 74, 143, 0.2);
+  border-top-color: #2c4a8f; 
   border-radius: 50%;
   animation: spin 0.8s linear infinite;
 }
@@ -464,7 +469,7 @@
 
 .selectTrigger:hover,
 .selectTriggerOpen {
-  border-color: var(--brand-primary);
+  border-color: #2c4a8f; 
 }
 
 .selectValue {
@@ -544,11 +549,11 @@
 
 .selectOptionActive {
   color: var(--text-primary);
-  background: rgba(55, 138, 221, 0.1);
+  background: rgba(44, 74, 143, 0.15); 
 }
 
 .selectOptionCheck {
   font-size: 12px;
-  color: var(--brand-primary);
+  color: #2c4a8f; 
   flex-shrink: 0;
 }

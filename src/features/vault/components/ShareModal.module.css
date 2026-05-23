@@ -1,7 +1,7 @@
 .backdrop {
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.55);
+  background: rgba(0, 0, 0, 0.72);
   backdrop-filter: blur(6px);
   display: flex;
   align-items: center;
@@ -10,8 +10,11 @@
 }
 
 .modal {
-  background: rgba(17, 20, 29, 0.85);
-  border: 0.5px solid rgba(255, 255, 255, 0.08);
+  background: #0d1220; /* Darker tone background profile to match the vault scheme */
+  border-top: 3px solid rgba(76, 130, 251, 0.35); /* 3px thick two-tone border rules */
+  border-left: 3px solid rgba(255, 255, 255, 0.08);
+  border-right: 3px solid rgba(255, 255, 255, 0.08);
+  border-bottom: 3px solid rgba(255, 255, 255, 0.08);
   border-radius: 16px;
   padding: 2.25rem 2.5rem 2rem;
   width: 100%;
@@ -44,8 +47,8 @@
 }
 
 .input {
-  background: rgba(27, 32, 43, 0.6);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(255, 255, 255, 0.04);
+  border: 0.5px solid rgba(255, 255, 255, 0.1);
   border-radius: var(--radius-md);
   padding: 0.7rem 1rem;
   font-size: 0.9rem;
@@ -61,7 +64,7 @@
 }
 
 .input:focus {
-  border-color: var(--brand-primary);
+  border-color: #2c4a8f; /* Slate blue focus parameter */
 }
 
 .inputError {
@@ -78,8 +81,8 @@
 }
 
 .walletPill {
-  background: rgba(27, 32, 43, 0.6);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(255, 255, 255, 0.04);
+  border: 0.5px solid rgba(255, 255, 255, 0.1);
   border-radius: var(--radius-md);
   padding: 0.7rem 1rem;
   font-size: 0.85rem;
@@ -100,7 +103,7 @@
   flex: 1;
   padding: 0.7rem 1rem;
   border-radius: var(--radius-md);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  border: 0.5px solid rgba(255, 255, 255, 0.12);
   background: transparent;
   color: var(--text-secondary);
   font-size: 0.9rem;
@@ -110,7 +113,7 @@
 }
 
 .btnOutline:hover {
-  border-color: var(--brand-primary);
+  border-color: #2c4a8f;
   color: var(--text-primary);
 }
 
@@ -119,7 +122,7 @@
   padding: 0.7rem 1rem;
   border-radius: var(--radius-md);
   border: none;
-  background: var(--brand-primary);
+  background: #2c4a8f; /* Balanced Slate Blue Primary Button background mapping */
   color: #fff;
   font-size: 0.9rem;
   font-family: var(--font-sans);
@@ -129,7 +132,7 @@
 }
 
 .btnPrimary:hover:not(:disabled) {
-  background: #2a6fb5;
+  background: #365aa9; /* Shifted hover state parameter matching your vault views */
 }
 
 .btnPrimary:disabled {

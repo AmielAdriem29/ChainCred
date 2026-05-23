@@ -46,37 +46,32 @@ function DeleteModal({
   };
 
   const handleWalletConfirm = async () => {
-  if (!connected || !wallet) {
-    setError('Please connect your wallet first.');
-    return;
-  }
-  setError('');
-  try {
-    const raw = await wallet.getChangeAddress();
-    const rawStr = Array.isArray(raw) ? raw[0] : raw;
-    const resolved = resolveAddress(rawStr);
-    console.log('raw from wallet:', rawStr);
-    console.log('resolved:', resolved);
-    console.log('user.walletAddress:', user?.walletAddress);
-    console.log('match:', resolved === user?.walletAddress);
-
-    if (resolved !== user?.walletAddress) {
-      setError('Wrong wallet. Please connect the wallet associated with this account.');
+    if (!connected || !wallet) {
+      setError('Please connect your wallet first.');
       return;
     }
-    setStep('deleting');
-    await deleteCredential(credential.id);
-    onDeleted();
-  } catch {
-    setError('Could not verify wallet. Make sure it is unlocked and try again.');
-    setStep('wallet');
-  }
-};
+    setError('');
+    try {
+      const raw = await wallet.getChangeAddress();
+      const rawStr = Array.isArray(raw) ? raw[0] : raw;
+      const resolved = resolveAddress(rawStr);
+
+      if (resolved !== user?.walletAddress) {
+        setError('Wrong wallet. Please connect the wallet associated with this account.');
+        return;
+      }
+      setStep('deleting');
+      await deleteCredential(credential.id);
+      onDeleted();
+    } catch {
+      setError('Could not verify wallet. Make sure it is unlocked and try again.');
+      setStep('wallet');
+    }
+  };
 
   return (
     <div className={styles.deleteModalBackdrop}>
       <div className={styles.deleteModal} onClick={e => e.stopPropagation()}>
-
         {step === 'confirm' && (
           <>
             <div className={styles.deleteModalIcon}>⚠</div>
@@ -147,14 +142,7 @@ function DeleteModal({
                 onClick={handleWalletConfirm}
                 disabled={!connected || step === 'deleting'}
               >
-                {step === 'deleting' ? (
-                  <span className={styles.deletingInner}>
-                    <span className={styles.deleteSpinner} />
-                    Deleting…
-                  </span>
-                ) : (
-                  'Delete permanently'
-                )}
+                {step === 'deleting' ? 'Deleting…' : 'Delete permanently'}
               </button>
             </div>
           </>
@@ -168,7 +156,7 @@ function DeleteModal({
 export function CredentialCard({ credential }: Props) {
   const { updateCredential } = useCredentials();
   const { user } = useAuth();
-  const { id, name, institution, year, logoText, logoColor, logoTextColor, status, txHash, blockNumber, issuedDate, extra, fileKey, fileName, fileType, ipfsGatewayUrl } = credential;
+  const { id, name, institution, year, logoText, logoColor, logoTextColor, status, txHash, blockNumber, issuedDate, fileKey, fileName, fileType, ipfsGatewayUrl } = credential;
 
   const [editing, setEditing] = useState(false);
   const [editName, setEditName] = useState(name);
@@ -199,40 +187,52 @@ export function CredentialCard({ credential }: Props) {
     }
   };
 
-  const isFullHash = txHash && !txHash.startsWith('sha256:') && txHash.length > 20;
-  const displayHash = isFullHash
-    ? `${txHash.slice(0, 16)}…${txHash.slice(-6)}`
-    : txHash;
+  const isSha256 = txHash && txHash.startsWith('sha256:');
+  const isFullHash = txHash && !isSha256 && txHash.length > 20;
+  const displayHash = isFullHash ? `${txHash.slice(0, 10)}…${txHash.slice(-4)}` : txHash;
 
-  const handleHashCopy = () => {
+  const handleHashCopy = (e: React.MouseEvent) => {
+    e.stopPropagation();
     if (!isFullHash) return;
     navigator.clipboard.writeText(txHash);
     setHashCopied(true);
     setTimeout(() => setHashCopied(false), 2000);
   };
 
+  const getDateLabel = () => {
+    if (isSha256) return 'Uploaded at ';
+    if (status === 'verified') return 'Verified at ';
+    return '';
+  };
+
   if (editing) {
     return (
       <div className={styles.card}>
-        <div className={styles.editHeader}>
-          <span className={styles.editTitle}>Edit credential</span>
-          <StatusBadge status={status} />
-        </div>
-        <input
-          className={styles.editInput}
-          value={editName}
-          onChange={e => setEditName(e.target.value)}
-          placeholder="Credential name"
-        />
-        <input
-          className={styles.editInput}
-          value={editInstitution}
-          onChange={e => setEditInstitution(e.target.value)}
-          placeholder="Institution"
-        />
-        <div className={styles.cardActions}>
-          <button className={styles.actionBtn} onClick={() => setEditing(false)}>Cancel</button>
-          <button className={styles.btnSave} onClick={handleSave}>Save changes</button>
+        <div className={styles.mainColumn}>
+          <div className={styles.detailsHeader}>
+            <div className={styles.details} style={{ gap: '8px' }}>
+              <span style={{ fontSize: 'var(--text-sm)', fontWeight: 'var(--font-semibold)', color: 'rgba(255, 255, 255, 0.7)' }}>
+                Edit credential
+              </span>
+              <input
+                className={styles.editInput}
+                value={editName}
+                onChange={e => setEditName(e.target.value)}
+                placeholder="Credential name"
+              />
+              <input
+                className={styles.editInput}
+                value={editInstitution}
+                onChange={e => setEditInstitution(e.target.value)}
+                placeholder="Institution"
+              />
+            </div>
+            <StatusBadge status={status} />
+          </div>
+          <div className={styles.cardActions} style={{ marginTop: '16px' }}>
+            <button className={styles.actionBtn} onClick={() => setEditing(false)}>Cancel</button>
+            <button className={styles.btnSave} onClick={handleSave}>Save changes</button>
+          </div>
         </div>
       </div>
     );
@@ -256,74 +256,69 @@ export function CredentialCard({ credential }: Props) {
         />
       )}
 
-      <div className={`${styles.card} ${status === 'verified' ? styles.verifiedCard : ''}`}>
-        <div className={styles.top}>
-          <div className={styles.meta}>
-            <div
-              className={styles.logo}
-              style={{ background: logoColor, color: logoTextColor }}
-            >
-              {logoText}
+      <div className={styles.card}>
+        {/* Left Side: Standalone Logo Div */}
+        <div className={styles.logo} style={{ background: logoColor, color: logoTextColor }}>
+          {logoText}
+        </div>
+
+        {/* Right Side: Primary Flex Column (Information block + action buttons underneath) */}
+        <div className={styles.mainColumn}>
+          
+          {/* Top of Right Column: Details & Status Badge Row */}
+          <div className={styles.detailsHeader}>
+            <div className={styles.details}>
+              <div className={styles.name} title={name}>{name}</div>
+              <div className={styles.inst} title={institution}>{institution} · {year}</div>
+              <div className={styles.date}>
+                {getDateLabel()}
+                {blockNumber ? `Block #${blockNumber}` : issuedDate}
+              </div>
+              {txHash && (
+                <div style={{ marginTop: '6px' }}>
+                  <button 
+                    className={`${styles.hash} ${isFullHash ? styles.hashClickable : ''}`} 
+                    onClick={handleHashCopy}
+                    disabled={!isFullHash}
+                  >
+                    <span>{displayHash}</span>
+                    {isFullHash && (
+                      <span className={styles.hashCopyHint}>{hashCopied ? ' ✓' : ' 📋'}</span>
+                    )}
+                  </button>
+                </div>
+              )}
             </div>
-            <div>
-              <div className={styles.name}>{name}</div>
-              <div className={styles.inst}>{institution} · {year}</div>
-            </div>
+            <StatusBadge status={status} />
           </div>
-          <StatusBadge status={status} />
-        </div>
 
-        <button
-          className={`${styles.hash} ${isFullHash ? styles.hashClickable : ''}`}
-          onClick={handleHashCopy}
-          title={isFullHash ? (hashCopied ? 'Copied!' : 'Click to copy full hash') : undefined}
-          disabled={!isFullHash}
-        >
-          <span className={styles.hashText}>{displayHash}</span>
-          {isFullHash && (
-            <span className={styles.hashCopyHint}>
-              {hashCopied ? '✓ Copied' : 'Copy'}
-            </span>
-          )}
-        </button>
-
-        <div className={styles.date}>
-          {extra && status === 'pending'
-            ? `${issuedDate} · ${extra}`
-            : blockNumber
-              ? `Issued ${issuedDate} · Block #${blockNumber}`
-              : issuedDate}
-        </div>
-
-        <div className={styles.cardActions}>
-          {status === 'pending' && (
-            <button className={styles.actionBtn} onClick={() => setEditing(true)}>Edit</button>
-          )}
-          {status === 'verified' && (ipfsGatewayUrl || (fileKey && fileName && fileType)) && (
+          {/* Bottom of Right Column: Action Buttons Row */}
+          <div className={styles.cardActions}>
+            {status === 'pending' && (
+              <button className={styles.actionBtn} onClick={() => setEditing(true)}>Edit</button>
+            )}
+            {status === 'verified' && (ipfsGatewayUrl || (fileKey && fileName && fileType)) && (
+              <button className={styles.actionBtn} onClick={handleViewDocument} disabled={previewLoading}>
+                {previewLoading ? '...' : '📄 View'}
+              </button>
+            )}
+            {isFullHash && (
+              <a
+                className={`${styles.actionBtn} ${styles.actionBtnChain}`}
+                href={`https://preview.cardanoscan.io/transaction/${txHash}`}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                Scan ↗
+              </a>
+            )}
             <button
-              className={styles.actionBtn}
-              onClick={handleViewDocument}
-              disabled={previewLoading}
+              className={`${styles.actionBtn} ${styles.actionBtnDanger}`}
+              onClick={() => setShowDeleteModal(true)}
             >
-              {previewLoading ? 'Opening…' : '📄 View Document'}
+              Delete
             </button>
-          )}
-          {isFullHash && (
-            <a
-              className={`${styles.actionBtn} ${styles.actionBtnChain}`}
-              href={`https://preview.cardanoscan.io/transaction/${txHash}`}
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              View on Cardanoscan ↗
-            </a>
-          )}
-          <button
-            className={`${styles.actionBtn} ${styles.actionBtnDanger}`}
-            onClick={() => setShowDeleteModal(true)}
-          >
-            Delete
-          </button>
+          </div>
         </div>
       </div>
     </>

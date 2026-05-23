@@ -1,125 +1,283 @@
 .page {
   background: transparent;
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  padding-top: 3rem;
   flex: 1;
   overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  padding: 3rem 4.5rem; 
+  min-height: 0;
 }
 
-.topbar {
+/* ── Row 1 Layout Structure ──────────────────────────────────────── */
+.rowOne {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 3rem;
-  padding: 0 3rem;
+  width: 100%;
+  margin-bottom: 2.5rem;
+}
+
+.headerArea {
+  flex: 1;
 }
 
 .heading {
-  font-size: 36px;
-  font-weight: 500;
+  font-size: 34px;
+  font-weight: 700;
   color: var(--text-primary);
+  line-height: 1.1;
+  margin: 0;
+  letter-spacing: -0.5px;
+  padding-left: 16px;
+  border-left: 3px solid #2c4a8f; /* Left accent matches the tone profile */
 }
 
-.shareBtn {
+/* ── Row 2 Layout Structure (Slim Stats + Search Match Height) ── */
+.rowTwo {
   display: flex;
-  align-items: center;
-  gap: 10px;
-  background: var(--brand-primary);
-  color: #fff;
-  border: none;
-  border-radius: var(--radius-md);
-  padding: 16px 32px;
-  font-size: 22px;
-  font-family: var(--font-sans);
-  font-weight: 500;
-  cursor: pointer;
-  transition: background 0.15s;
+  align-items: stretch;
+  gap: 36px;
+  margin-bottom: 3.5rem;
+  width: 100%;
 }
 
-.shareBtn:hover {
-  background: #0c447c;
-}
-
-.contentArea {
-  width: min(100%, 1450px);
-  padding-left: 3rem;
-  padding-right: clamp(24px, 5vw, 80px);
-}
-
-.statsRow {
+.statsGroup {
   display: flex;
-  flex-wrap: nowrap;
-  gap: 24px;
-  margin-bottom: 3rem;
+  gap: 16px;
+  flex: 1;
 }
 
 .stat {
   flex: 1;
   background: var(--surface-1);
   border-radius: var(--radius-md);
-  padding: 28px;
-  border: 0.5px solid var(--border-subtle);
+  padding: 16px 20px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  
+  /* Upgraded to 3px two-tone layout borders */
+  border-top: 3px solid rgba(76, 130, 251, 0.35);
+  border-left: 3px solid rgba(255, 255, 255, 0.08);
+  border-right: 3px solid rgba(255, 255, 255, 0.08);
+  border-bottom: 3px solid rgba(255, 255, 255, 0.08);
 }
 
 .statLabel {
-  font-size: 18px;
+  font-size: 12px;
   color: var(--text-secondary);
-  margin-bottom: 8px;
+  margin-bottom: 2px;
   text-align: left;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
 }
 
 .statValue {
-  font-size: 48px;
-  font-weight: 500;
+  font-size: 28px;
+  font-weight: 600;
   color: var(--text-primary);
   text-align: left;
+  line-height: 1.1;
 }
 
 .green {
   color: var(--status-verified-text);
 }
 
+.searchPanel {
+  flex: 1;
+  background: var(--surface-1);
+  border-radius: var(--radius-md);
+  padding: 14px 20px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  
+  /* Upgraded to 3px two-tone layout borders */
+  border-top: 3px solid rgba(76, 130, 251, 0.35);
+  border-left: 3px solid rgba(255, 255, 255, 0.08);
+  border-right: 3px solid rgba(255, 255, 255, 0.08);
+  border-bottom: 3px solid rgba(255, 255, 255, 0.08);
+}
+
+.searchInput {
+  flex: 1;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: var(--radius-xs);
+  color: var(--text-primary);
+  font-family: var(--font-sans);
+  font-size: 14px;
+  padding: 8px 12px;
+  outline: none;
+  transition: var(--transition-all);
+}
+
+.searchInput:focus {
+  border-color: var(--brand-light);
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.filterToggleGroup {
+  display: flex;
+  position: relative;
+  background: rgba(0, 0, 0, 0.2);
+  padding: 4px;
+  border-radius: 30px; /* Rounded pill track style */
+  border: 1px solid rgba(255, 255, 255, 0.04);
+  overflow: hidden;
+  isolation: isolate; /* Locks render levels so tab text stays above background slider */
+}
+
+.filterToggleGroup {
+  display: flex;
+  position: relative;
+  background: rgba(0, 0, 0, 0.2);
+  padding: 4px;
+  border-radius: 30px; /* Only the outer track boundary is rounded */
+  border: 1px solid rgba(255, 255, 255, 0.04);
+  overflow: hidden;
+  isolation: isolate; 
+}
+
+.filterToggleGroup {
+  display: flex;
+  position: relative;
+  background: rgba(0, 0, 0, 0.2);
+  padding: 4px;
+  border-radius: var(--radius-xs); /* Reverted track back to matching component token */
+  border: 1px solid rgba(255, 255, 255, 0.04);
+  overflow: hidden;
+  isolation: isolate; 
+}
+
+/* ── Sliding Background Indicator Pill ── */
+.filterToggleGroup::before {
+  content: '';
+  position: absolute;
+  top: 4px;
+  bottom: 4px;
+  left: 4px;
+  width: calc(33.333% - 4px); 
+  background: #2c4a8f; 
+  border-radius: var(--radius-xs); /* Sharp matching interior corners */
+  z-index: -1;
+  transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1); 
+}
+
+/* ── Slide Transform Coordinates ── */
+.filterActive-all::before {
+  transform: translateX(0);
+}
+
+.filterActive-verified::before {
+  transform: translateX(100%);
+}
+
+.filterActive-pending::before {
+  transform: translateX(200%);
+}
+
+.filterTab {
+  background: transparent;
+  border: none;
+  color: var(--text-secondary);
+  font-family: var(--font-sans);
+  font-size: 12px;
+  font-weight: 600;
+  padding: 8px 16px;
+  border-radius: var(--radius-xs); /* Sharp inner tab boundary limits */
+  cursor: pointer;
+  width: 80px; 
+  text-align: center;
+  transition: color 0.15s ease;
+}
+
+.filterTab:hover {
+  color: #ffffff;
+}
+
+.activeTab {
+  color: #ffffff !important;
+  transition: color 0.2s ease;
+}
+
+/* ── Row 3 Layout Structure ──────────────────────────────────────── */
+.rowThree {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  margin-bottom: 24px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  padding-bottom: 12px;
+}
+
 .sectionTitle {
-  font-size: 18px;
-  font-weight: 500;
+  font-size: 16px;
+  font-weight: 600;
   color: var(--text-secondary);
   text-transform: uppercase;
-  letter-spacing: 0.5px;
-  margin-bottom: 20px;
+  letter-spacing: 0.8px;
+  margin: 0;
 }
 
-.grid {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 24px;
-}
-
-.grid > * {
-  flex: 1 1 calc(50% - 12px);
-  min-width: 0;
-}
-.issuanceBtn {
+/* ── Action Buttons (Steel / Slate Blue Middle Ground) ────────────── */
+.uploadBtn {
   display: flex;
   align-items: center;
   gap: 10px;
-  background: #0f3d6a;
-  color: var(--text-primary);
-  border: 0.5px solid rgba(255, 255, 255, 0.15);
+  background: #2c4a8f; /* Balanced Steel Blue */
+  color: #ffffff;
+  border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: var(--radius-md);
-  padding: 16px 32px;
-  font-size: 22px;
+  padding: 0 24px;
+  height: 46px;
+  font-size: 14px;
   font-family: var(--font-sans);
   font-weight: 500;
   cursor: pointer;
-  transition: border-color 0.15s, background 0.15s;
+  transition: var(--transition-all);
+  white-space: nowrap;
 }
 
-.issuanceBtn:hover {
-  border-color: var(--brand-primary);
-  background: var(--brand-subtle);
+.uploadBtn:hover {
+  background: #365aa9; /* Slightly brighter highlight shift on hover */
+  border-color: rgba(255, 255, 255, 0.2);
+  transform: translateY(-1px);
 }
 
+.shareBtn {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: #2c4a8f; /* Balanced Steel Blue */
+  color: #fff;
+  border: none;
+  border-radius: var(--radius-md);
+  padding: 0 24px;
+  height: 52px;
+  font-size: 15px;
+  font-family: var(--font-sans);
+  font-weight: 500;
+  cursor: pointer;
+  transition: var(--transition-all);
+  white-space: nowrap;
+}
+
+.shareBtn:hover {
+  background: #365aa9; /* Slightly brighter highlight shift on hover */
+  transform: translateY(-1px);
+}
+
+/* ── Credentials Section 4 Grid Layout ───────────────────────────── */
+.grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 36px;
+}
+
+/* ── Toast ────────────────────────────────────────────────────────── */
 .toast {
   position: fixed;
   bottom: 2rem;
@@ -147,6 +305,6 @@
   width: 6px;
   height: 6px;
   border-radius: 50%;
-  background: var(--brand-primary);
+  background: #111c30;
   flex-shrink: 0;
 }
