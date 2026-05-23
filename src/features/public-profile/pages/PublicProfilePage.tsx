@@ -29,35 +29,24 @@ export function PublicProfilePage({ publicProfileWallet }: PublicProfilePageProp
   const { user } = useAuth();
   const [sharedCredentials, setSharedCredentials] = useState<Credential[]>([]);
   const [previewingId, setPreviewingId] = useState<string | null>(null);
+  const [searchQuery, setSearchQuery] = useState('');
 
   const searchParams = useMemo(() => new URLSearchParams(window.location.search), []);
   const requestedWallet = searchParams.get('wallet') ?? '';
   const requestedToken = searchParams.get('token') ?? '';
   const ownerWallet = user?.walletAddress ?? '';
 
-  // Determine if this is a direct public profile route or a share link
   const isDirectProfileRoute = Boolean(publicProfileWallet);
-
-  // Whether this page was opened via a share link (token present in URL)
   const isShareLinkRequest = Boolean(requestedWallet && requestedToken);
 
-  // Read the share record from localStorage — only present in the owner's browser.
-  // In a recruiter's browser this will always be null (their localStorage is empty),
-  // which is NOT the same as revoked. We only use this record to detect explicit
-  // revocation by the owner; absence means "unknown / cross-browser" → grant access.
   const [shareRecord, setShareRecord] = useState<ShareLinkRecord | null>(() => {
     if (!isShareLinkRequest) return null;
     return findShareLink(requestedWallet, requestedToken);
   });
 
-  // shareDenied is true ONLY when we can positively confirm revocation:
-  // the record exists in localStorage AND its status is 'revoked'.
-  // If the record is null (cross-browser recruiter view), we trust the URL token.
   const shareDenied =
     isShareLinkRequest && shareRecord !== null && shareRecord.status === 'revoked';
 
-  // Active share: either the record says 'active', or we're in a cross-browser
-  // recruiter view where the record simply doesn't exist locally (trust the token).
   const isSharedView =
     isShareLinkRequest &&
     (shareRecord === null || shareRecord.status === 'active');
@@ -68,19 +57,12 @@ export function PublicProfilePage({ publicProfileWallet }: PublicProfilePageProp
       ? (shareRecord?.walletAddress ?? requestedWallet)
       : ownerWallet;
 
-  // Poll for status changes (same-tab) + storage events (cross-tab, same-browser).
-  // This catches both revocation AND re-granting by the owner in the same browser.
-  // Cross-browser revocations are not detectable via localStorage alone.
   useEffect(() => {
     if (!isShareLinkRequest) return;
-
-    // Poll every 500ms to catch same-tab revocations in real-time
     const interval = setInterval(() => {
       const latest = findShareLink(requestedWallet, requestedToken);
       setShareRecord(latest);
     }, 500);
-
-    // Storage event listener for cross-tab revocations
     const handler = (e: StorageEvent) => {
       if (e.key === null || e.key.startsWith('chaincred_share_links_')) {
         const latest = findShareLink(requestedWallet, requestedToken);
@@ -88,7 +70,6 @@ export function PublicProfilePage({ publicProfileWallet }: PublicProfilePageProp
       }
     };
     window.addEventListener('storage', handler);
-
     return () => {
       clearInterval(interval);
       window.removeEventListener('storage', handler);
@@ -97,41 +78,29 @@ export function PublicProfilePage({ publicProfileWallet }: PublicProfilePageProp
 
   useEffect(() => {
     let cancelled = false;
-
     const hydrate = async () => {
       if (!activeWallet) {
         if (!cancelled) setSharedCredentials([]);
         return;
       }
-
       const hydrated = loadVaultCredentials(activeWallet);
-
       if (!cancelled) {
         setSharedCredentials(hydrated.filter(item => item.status === 'verified'));
-        // Only mark viewed if the link is still active
         if (shareRecord && shareRecord.status === 'active') {
           markShareLinkViewed(shareRecord.walletAddress, shareRecord.token);
         }
       }
     };
-
     hydrate();
-
-    return () => {
-      cancelled = true;
-    };
+    return () => { cancelled = true; };
   }, [activeWallet, isSharedView, isDirectProfileRoute, shareRecord]);
 
   const handleCardClick = async (credential: Credential) => {
-    // Prefer IPFS — works for any viewer, not just the owner's browser
     if (credential.ipfsGatewayUrl) {
       window.open(credential.ipfsGatewayUrl, '_blank', 'noopener,noreferrer');
       return;
     }
-    // Fallback: local IndexedDB blob (only works on the owner's browser)
-    if (!credential.fileKey || !credential.fileName || !credential.fileType) {
-      return;
-    }
+    if (!credential.fileKey || !credential.fileName || !credential.fileType) return;
     setPreviewingId(credential.id);
     try {
       await previewCredentialFile(
@@ -147,11 +116,28 @@ export function PublicProfilePage({ publicProfileWallet }: PublicProfilePageProp
     }
   };
 
+  // Stats for Row 2
+  const verifiedCount = sharedCredentials.length;
+  const uniqueInstitutions = useMemo(() => {
+    const instSet = new Set(sharedCredentials.map(c => c.institution));
+    return instSet.size;
+  }, [sharedCredentials]);
+
+  // Filter credentials based on search
+  const filteredCredentials = useMemo(() => {
+    if (!searchQuery.trim()) return sharedCredentials;
+    const query = searchQuery.toLowerCase();
+    return sharedCredentials.filter(
+      cred =>
+        cred.name.toLowerCase().includes(query) ||
+        cred.institution.toLowerCase().includes(query)
+    );
+  }, [sharedCredentials, searchQuery]);
+
   if (shareDenied) {
     return (
       <div className={styles.page}>
         <div className={styles.watermark}>ACCESS DENIED</div>
-
         <div className={styles.contentArea}>
           <div className={styles.deniedCard}>
             <div className={styles.deniedTitle}>Access Denied</div>
@@ -168,10 +154,6 @@ export function PublicProfilePage({ publicProfileWallet }: PublicProfilePageProp
     );
   }
 
-  const publicCredentials = sharedCredentials;
-
-  // In a cross-browser recruiter view, user is null and shareRecord is null —
-  // we only have requestedWallet from the URL, so fall back to the wallet address.
   const profileDisplayName =
     shareRecord?.recipientName ??
     user?.name ??
@@ -181,6 +163,13 @@ export function PublicProfilePage({ publicProfileWallet }: PublicProfilePageProp
     ? formatShortWallet(publicProfileWallet ?? '')
     : profileDisplayName;
 
+  // Determine banner text
+  const bannerText = isDirectProfileRoute
+    ? 'Public profile – only verified credentials are displayed'
+    : isSharedView
+      ? `Shared with ${shareRecord?.recipientName ?? 'you'} – only verified credentials are shown`
+      : 'Recruiter preview – what employers see when you share your profile';
+
   return (
     <div className={styles.page}>
       <div className={styles.watermark}>
@@ -188,42 +177,70 @@ export function PublicProfilePage({ publicProfileWallet }: PublicProfilePageProp
       </div>
 
       <div className={styles.contentArea}>
-        <div className={styles.banner}>
-          <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5">
-            <circle cx="8" cy="6" r="2.5" />
-            <path d="M3 13c0-2.5 2.2-4 5-4s5 1.5 5 4" />
-          </svg>
-          {isDirectProfileRoute
-            ? 'This is a public profile view. Only verified credentials are displayed. Click any card to preview.'
-            : isSharedView
-              ? `Shared with ${shareRecord?.recipientName ?? 'you'} · Only verified credentials are shown.`
-              : 'You are viewing your public profile as a recruiter would see it.'}
-        </div>
-
-        <div className={styles.topbar}>
-          <h2 className={styles.heading}>
-            {isDirectProfileRoute
-              ? `${walletDisplayName} · Public Profile`
-              : isSharedView
-                ? `${formatShortWallet(activeWallet || requestedWallet)} · Public Profile`
-                : `${user?.name ?? 'Your Profile'} · Public Profile`}
-          </h2>
-          {!isDirectProfileRoute && user?.email && (
-            <p className={styles.profileEmail}>{user.email}</p>
-          )}
-        </div>
-
-        <div className={styles.grid}>
-          {publicCredentials.length === 0 ? (
-            <p style={{ color: 'var(--text-secondary)', fontSize: 15 }}>
+        {/* ROW 1: Heading + Banner Pill */}
+        <div className={styles.rowOne}>
+          <div className={styles.headerArea}>
+            <h2 className={styles.heading}>
               {isDirectProfileRoute
-                ? 'No verified credentials available for this profile.'
+                ? `${walletDisplayName} · Public Profile`
                 : isSharedView
-                  ? 'No verified credentials are available for this link.'
-                  : 'No verified credentials yet.'}
-            </p>
+                  ? `${formatShortWallet(activeWallet || requestedWallet)} · Public Profile`
+                  : `${user?.name ?? 'Your Profile'} · Public Profile`}
+            </h2>
+            {!isDirectProfileRoute && user?.email && (
+              <p className={styles.profileEmail}>{user.email}</p>
+            )}
+          </div>
+          <div className={styles.bannerPill}>
+            <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5">
+              <circle cx="8" cy="6" r="2.5" />
+              <path d="M3 13c0-2.5 2.2-4 5-4s5 1.5 5 4" />
+            </svg>
+            {bannerText}
+          </div>
+        </div>
+
+        {/* ROW 2: Stats + Search Panel (matching VaultPage) */}
+        <div className={styles.rowTwo}>
+          <div className={styles.statsPanel}>
+            <div className={styles.stat}>
+              <div className={styles.statLabel}>Verified Credentials</div>
+              <div className={styles.statValue}>{verifiedCount}</div>
+            </div>
+            <div className={styles.stat}>
+              <div className={styles.statLabel}>Institutions</div>
+              <div className={styles.statValue}>{uniqueInstitutions}</div>
+            </div>
+          </div>
+          <div className={styles.searchPanel}>
+            <input
+              type="text"
+              className={styles.searchInput}
+              placeholder="Search by name or institution..."
+              value={searchQuery}
+              onChange={e => setSearchQuery(e.target.value)}
+            />
+          </div>
+        </div>
+
+        {/* ROW 3: Section Header (optional, but consistent) */}
+        <div className={styles.rowThree}>
+          <div className={styles.sectionTitle}>Verified credentials</div>
+          <div className={styles.sectionCount}>
+            {filteredCredentials.length} {filteredCredentials.length === 1 ? 'credential' : 'credentials'} found
+          </div>
+        </div>
+
+        {/* ROW 4: Credential Grid with Logo Cards */}
+        <div className={styles.grid}>
+          {filteredCredentials.length === 0 ? (
+            <div className={styles.emptyState}>
+              {sharedCredentials.length === 0
+                ? 'No verified credentials available for this profile.'
+                : 'No matches found for your search.'}
+            </div>
           ) : (
-            publicCredentials.map(cred => (
+            filteredCredentials.map(cred => (
               <article
                 key={cred.id}
                 className={styles.publicCard}
@@ -231,26 +248,42 @@ export function PublicProfilePage({ publicProfileWallet }: PublicProfilePageProp
                 style={{
                   cursor: (cred.ipfsGatewayUrl || cred.fileKey) ? 'pointer' : 'default',
                   opacity: previewingId === cred.id ? 0.7 : 1,
-                  transition: 'opacity 0.2s',
                 }}
               >
-                <div className={styles.publicCardTop}>
-                  <div>
-                    <div className={styles.publicName}>{cred.name}</div>
-                    <div className={styles.publicInst}>{cred.institution} · {cred.year}</div>
-                  </div>
-                  <StatusBadge status={cred.status} />
+                {/* Logo block (left side) */}
+                <div
+                  className={styles.cardLogo}
+                  style={{
+                    background: cred.logoColor || '#1a2c4e',
+                    color: cred.logoTextColor || '#ffffff',
+                  }}
+                >
+                  {cred.logoText || cred.institution.slice(0, 3).toUpperCase()}
                 </div>
-                <div className={styles.publicMeta}>{cred.issuedDate}</div>
-                {(cred.ipfsGatewayUrl || cred.fileKey) && (
-                  <div style={{ marginTop: '12px', fontSize: '13px', color: 'var(--text-tertiary)' }}>
-                    📎 {cred.fileName ? 'Click to view' : 'File attached'}
+
+                {/* Main content */}
+                <div className={styles.cardContent}>
+                  <div className={styles.cardHeader}>
+                    <div>
+                      <div className={styles.cardTitle}>{cred.name}</div>
+                      <div className={styles.cardSubtitle}>{cred.institution} · {cred.year}</div>
+                    </div>
+                    <StatusBadge status={cred.status} />
                   </div>
-                )}
+                  <div className={styles.cardMeta}>{cred.issuedDate}</div>
+                  {(cred.ipfsGatewayUrl || cred.fileKey) && (
+                    <div className={styles.fileHint}>📎 {cred.fileName ? 'Click to view' : 'File attached'}</div>
+                  )}
+                </div>
               </article>
             ))
           )}
         </div>
+
+        {/* Footer */}
+        <footer className={styles.footer}>
+          Verified on Cardano · <span className={styles.brand}>ChainCred</span>
+        </footer>
       </div>
     </div>
   );

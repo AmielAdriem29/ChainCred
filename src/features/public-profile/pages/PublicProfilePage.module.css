@@ -1,12 +1,16 @@
+/* ── Page container – identical to VaultPage ── */
 .page {
   background: transparent;
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  padding: 3rem 0;
   flex: 1;
   overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  padding: 3rem 4.5rem;
+  min-height: 0;
   position: relative;
 }
+
+/* Watermark – subtle background text */
 .watermark {
   position: absolute;
   top: 50%;
@@ -14,119 +18,324 @@
   transform: translate(-50%, -50%) rotate(-30deg);
   font-size: 64px;
   font-weight: 600;
-  color: rgba(55, 138, 221, 0.06);
+  color: rgba(76, 130, 251, 0.04);
   pointer-events: none;
   white-space: nowrap;
   letter-spacing: 2px;
   user-select: none;
-}
-
-.banner {
-  background: var(--brand-subtle);
-  border: 0.5px solid var(--brand-border);
-  border-radius: var(--radius-md);
-  padding: 12px 18px;
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  margin-bottom: 1.5rem;
-  font-size: 18px;
-  color: var(--brand-primary);
-}
-
-.topbar {
-  margin-bottom: 2rem;
-}
-
-.heading {
-  font-size: 36px;
-  font-weight: 500;
-  color: var(--text-primary);
+  z-index: 0;
 }
 
 .contentArea {
-  width: min(100%, 1600px);
-  padding-left: 3rem;
-  padding-right: clamp(24px, 8vw, 120px);
+  width: 100%;
+  position: relative;
+  z-index: 1;
 }
 
-.grid {
+/* ── ROW 1: Heading + Banner Pill (inline) ── */
+.rowOne {
   display: flex;
-  flex-wrap: wrap;
+  align-items: flex-start;
+  justify-content: space-between;
+  width: 100%;
+  margin-bottom: 2rem;
   gap: 24px;
+  flex-wrap: wrap;
 }
 
-.grid > * {
-  flex: 1 1 calc(50% - 12px);
-  min-width: 0;
+.headerArea {
+  flex: 1;
+}
+
+.heading {
+  font-size: 34px;
+  font-weight: 700;
+  color: var(--text-primary);
+  line-height: 1.1;
+  margin: 0;
+  letter-spacing: -0.5px;
+  padding-left: 16px;
+  border-left: 3px solid #2c4a8f;
+}
+
+.profileEmail {
+  font-size: 14px;
+  color: var(--text-secondary);
+  margin: 8px 0 0 16px;
+}
+
+.bannerPill {
+  background: rgba(76, 130, 251, 0.12);
+  border: 1px solid rgba(76, 130, 251, 0.25);
+  border-radius: 40px;
+  padding: 8px 18px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  color: var(--text-secondary);
+  white-space: nowrap;
+  flex-shrink: 0;
+  height: fit-content;
+  margin-top: 4px;
+}
+
+/* ── ROW 2: Stats + Search Panel (matches VaultPage) ── */
+.rowTwo {
+  display: flex;
+  align-items: stretch;
+  gap: 36px;
+  margin-bottom: 3rem;
+  width: 100%;
+}
+
+.statsPanel {
+  display: flex;
+  gap: 16px;
+  flex: 1;
+}
+
+.stat {
+  flex: 1;
+  background: #0d1525;
+  border-radius: var(--radius-md);
+  padding: 16px 20px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  border-top: 3px solid rgba(76, 130, 251, 0.35);
+  border-left: 3px solid rgba(255, 255, 255, 0.08);
+  border-right: 3px solid rgba(255, 255, 255, 0.08);
+  border-bottom: 3px solid rgba(255, 255, 255, 0.08);
+}
+
+.statLabel {
+  font-size: 12px;
+  color: var(--text-secondary);
+  margin-bottom: 2px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.statValue {
+  font-size: 28px;
+  font-weight: 600;
+  color: var(--text-primary);
+  line-height: 1.1;
+}
+
+.searchPanel {
+  flex: 1;
+  background: #0d1525;
+  border-radius: var(--radius-md);
+  padding: 14px 20px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  border-top: 3px solid rgba(76, 130, 251, 0.35);
+  border-left: 3px solid rgba(255, 255, 255, 0.08);
+  border-right: 3px solid rgba(255, 255, 255, 0.08);
+  border-bottom: 3px solid rgba(255, 255, 255, 0.08);
+}
+
+.searchInput {
+  flex: 1;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: var(--radius-xs);
+  color: var(--text-primary);
+  font-family: var(--font-sans);
+  font-size: 14px;
+  padding: 8px 12px;
+  outline: none;
+  transition: var(--transition-all);
+}
+
+.searchInput:focus {
+  border-color: var(--brand-light);
+  background: rgba(255, 255, 255, 0.08);
+}
+
+/* ── ROW 3: Section Header (consistent with Vault/Share) ── */
+.rowThree {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  margin-bottom: 24px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  padding-bottom: 12px;
+}
+
+.sectionTitle {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  margin: 0;
+}
+
+.sectionCount {
+  font-size: 13px;
+  color: var(--text-tertiary);
+}
+
+/* ── CREDENTIAL CARDS (Logo block on left, matching CredentialCard) ── */
+.grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 36px;
+  margin-bottom: 3rem;
 }
 
 .publicCard {
-  background: var(--surface-0);
-  border: 0.5px solid var(--border-subtle);
+  background: #0d1525;
   border-radius: var(--radius-lg);
-  padding: 24px;
-  min-height: 140px;
+  padding: 32px;
+  cursor: pointer;
+  transition: var(--transition-all);
+  display: flex;
+  flex-direction: row;
+  gap: 28px;
+  align-items: stretch;
+  border-top: 3px solid rgba(76, 130, 251, 0.35);
+  border-left: 3px solid rgba(255, 255, 255, 0.08);
+  border-right: 3px solid rgba(255, 255, 255, 0.08);
+  border-bottom: 3px solid rgba(255, 255, 255, 0.08);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05), 0 4px 16px rgba(0, 0, 0, 0.35);
 }
 
-.publicCardTop {
+.publicCard:hover {
+  border-top-color: rgba(76, 130, 251, 0.55);
+  border-left-color: rgba(255, 255, 255, 0.18);
+  border-right-color: rgba(255, 255, 255, 0.18);
+  border-bottom-color: rgba(255, 255, 255, 0.18);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.07), 0 8px 28px rgba(0, 0, 0, 0.45);
+}
+
+/* Logo block (150px width, matches CredentialCard) */
+.cardLogo {
+  width: 150px;
+  border-radius: var(--radius-sm);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(255, 255, 255, 0.04);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+  font-weight: 600;
+  flex-shrink: 0;
+}
+
+/* Right side content */
+.cardContent {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-width: 0;
+}
+
+.cardHeader {
   display: flex;
   align-items: flex-start;
   justify-content: space-between;
   gap: 16px;
+  margin-bottom: 8px;
 }
 
-.publicName {
-  font-size: 22px;
-  font-weight: 500;
-  color: var(--text-primary);
-  margin-bottom: 4px;
+.cardTitle {
+  font-size: 20px;
+  font-weight: 600;
+  color: #f0f4ff;
+  line-height: 1.3;
 }
 
-.publicInst {
-  font-size: 18px;
-  color: var(--text-secondary);
+.cardSubtitle {
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.5);
+  margin-top: 4px;
 }
 
-.publicMeta {
+.cardMeta {
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.35);
+  margin-top: 8px;
+}
+
+.fileHint {
   margin-top: 16px;
+  font-size: 12px;
   color: var(--text-tertiary);
-  font-size: 15px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
 }
 
+/* Empty state */
+.emptyState {
+  text-align: center;
+  color: var(--text-tertiary);
+  padding: 48px 24px;
+  font-size: 14px;
+  background: #0d1525;
+  border-radius: var(--radius-lg);
+  border-top: 3px solid rgba(76, 130, 251, 0.35);
+  border-left: 3px solid rgba(255, 255, 255, 0.08);
+  border-right: 3px solid rgba(255, 255, 255, 0.08);
+  border-bottom: 3px solid rgba(255, 255, 255, 0.08);
+  grid-column: span 2;
+}
+
+/* Footer */
+.footer {
+  margin-top: 2rem;
+  padding-top: 1.5rem;
+  text-align: center;
+  font-size: 12px;
+  color: var(--text-tertiary);
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.brand {
+  color: #4c82fb;
+  font-weight: 500;
+}
+
+/* Denied card (unchanged, but ensure consistency) */
 .deniedCard {
-  width: min(680px, 100%);
-  background: rgba(11, 18, 32, 0.86);
-  border: 1px solid rgba(239, 68, 68, 0.18);
-  border-radius: 24px;
-  padding: 32px;
-  box-shadow: 0 30px 90px rgba(0, 0, 0, 0.28);
+  max-width: 600px;
+  margin: 0 auto;
+  background: #0d1525;
+  border-radius: var(--radius-lg);
+  padding: 40px;
+  text-align: center;
+  border-top: 3px solid rgba(239, 68, 68, 0.6);
+  border-left: 3px solid rgba(255, 255, 255, 0.08);
+  border-right: 3px solid rgba(255, 255, 255, 0.08);
+  border-bottom: 3px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
 }
 
 .deniedTitle {
-  font-size: 32px;
-  font-weight: 600;
-  color: var(--status-revoked-text);
-  margin-bottom: 12px;
+  font-size: 28px;
+  font-weight: 700;
+  color: #f87171;
+  margin-bottom: 16px;
 }
 
 .deniedText {
-  font-size: 18px;
+  font-size: 16px;
   color: var(--text-primary);
-  line-height: 1.6;
+  line-height: 1.5;
+  margin-bottom: 24px;
 }
 
 .deniedMeta {
-  margin-top: 20px;
-  display: flex;
-  flex-wrap: wrap;
-  gap: 14px;
+  font-size: 12px;
   color: var(--text-tertiary);
-  font-size: 14px;
-}
-
-.profileEmail {
-  font-size: 15px;
-  color: var(--text-secondary);
-  margin: 4px 0 0 0;
+  display: flex;
+  justify-content: center;
+  gap: 16px;
+  flex-wrap: wrap;
 }
