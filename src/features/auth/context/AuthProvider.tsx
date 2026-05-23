@@ -5,7 +5,7 @@ import type { UserProfile } from './authTypes';
 
 const STORAGE_KEY = 'chaincred_users';
 const SESSION_KEY = 'chaincred_session';
-const WALLET_KEY  = 'chaincred_wallet';
+const WALLET_KEY = 'chaincred_wallet';
 
 function getUsers(): Record<string, UserProfile> {
   try {
@@ -16,32 +16,7 @@ function getUsers(): Record<string, UserProfile> {
   }
 }
 
-const INSTITUTION_SEED: UserProfile[] = [
-  {
-    walletAddress: 'addr_test1qqc76e0p3kfncru2z8exf5j6x8gwsduxwg088q9j05mk53wmp7qkqalrl0a05jsxgtkl5n9a67m23s4x92c8ydwhkxrsthzvmg',
-    name: 'Cebu Institute of Technology – University',
-    email: 'citu@chaincred.app',
-    registeredAt: '2025-01-01T00:00:00.000Z',
-    accountType: 'organization',
-    organizationName: 'Cebu Institute of Technology – University',
-  },
-];
-
-function seedInstitutions() {
-  const users = getUsers();
-  let changed = false;
-  for (const profile of INSTITUTION_SEED) {
-    if (!users[profile.walletAddress]) {
-      users[profile.walletAddress] = profile;
-      changed = true;
-    }
-  }
-  if (changed) localStorage.setItem(STORAGE_KEY, JSON.stringify(users));
-}
-
 export function AuthProvider({ children }: { children: ReactNode }) {
-  seedInstitutions();
-
   const [user, setUser] = useState<UserProfile | null>(() => {
     try {
       const session = sessionStorage.getItem(SESSION_KEY);
