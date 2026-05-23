@@ -6,12 +6,11 @@ export interface VerifyTokenPayload {
   sha256Hash: string;
   ownerName: string;
   ownerWallet: string;
-  issuedAt: number; // timestamp when token was generated
+  issuedAt: number; 
 }
 
 export function encodeVerifyToken(payload: VerifyTokenPayload): string {
   const json = JSON.stringify(payload);
-  // btoa needs a binary string — encode via encodeURIComponent first
   return btoa(encodeURIComponent(json))
     .replace(/\+/g, '-')
     .replace(/\//g, '_')

@@ -231,7 +231,7 @@ export function IssueCredentialModal({ isOpen, onClose }: Props) {
       id: generateId(),
       name: credName.trim(),
       organization: orgName,
-      organizationWallet: orgWallet,   // ✅ now uses the issuer's wallet address
+      organizationWallet: orgWallet,   
       year: new Date(issueDate).getFullYear(),
       logoText: orgName.slice(0, 3).toUpperCase(),
       status: 'verified',

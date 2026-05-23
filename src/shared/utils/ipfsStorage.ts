@@ -60,7 +60,7 @@ export async function pinOnIPFS(
 
     const response = await fetch(`${BLOCKFROST_IPFS_URL}/pin/add/${cid}`, {
         method: 'POST',
-        headers: {project_id: apiKey},
+        headers: { project_id: apiKey },
     });
 
     if (!response.ok) {

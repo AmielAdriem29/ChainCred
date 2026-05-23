@@ -4,7 +4,6 @@ import type { VerifyTokenPayload } from '../../../shared/utils/verifyToken';
 import type { Credential } from '../../../shared/types';
 import styles from './VerifyPage.module.css';
 
-// ── Storage helpers (mirrors CredentialContext key scheme) ────────────────────
 const VAULT_KEY_PREFIX = 'chaincred_vault_';
 
 function updateCredentialInStorage(
@@ -33,7 +32,6 @@ function updateCredentialInStorage(
   }
 }
 
-// ── Signature Pad ────────────────────────────────────────────────────────────
 function SignaturePad({ onChange }: { onChange: (dataUrl: string | null) => void }) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const drawing = useRef(false);
@@ -117,7 +115,6 @@ function SignaturePad({ onChange }: { onChange: (dataUrl: string | null) => void
   );
 }
 
-// ── Main Page ────────────────────────────────────────────────────────────────
 type Step = 'form' | 'submitting' | 'success' | 'error' | 'invalid';
 
 export function VerifyPage() {
@@ -130,7 +127,6 @@ export function VerifyPage() {
     return decodeVerifyToken(token) ? 'form' : 'invalid';
   });
 
-  // Form fields
   const [signeeName, setSigneeName] = useState('');
   const [signeePosition, setSigneePosition] = useState('');
   const [signeeInstitution, setSigneeInstitution] = useState('');
@@ -148,12 +144,12 @@ export function VerifyPage() {
     typedName.trim().toLowerCase() === signeeName.trim().toLowerCase();
 
   async function sha256String(str: string): Promise<string> {
-  const buffer = new TextEncoder().encode(str);
-  const hashBuffer = await crypto.subtle.digest('SHA-256', buffer);
-  return Array.from(new Uint8Array(hashBuffer))
-    .map(b => b.toString(16).padStart(2, '0'))
-    .join('');
-}
+    const buffer = new TextEncoder().encode(str);
+    const hashBuffer = await crypto.subtle.digest('SHA-256', buffer);
+    return Array.from(new Uint8Array(hashBuffer))
+      .map(b => b.toString(16).padStart(2, '0'))
+      .join('');
+  }
 
   const handleSubmit = async () => {
     if (!payload || !canSubmit) return;
@@ -168,7 +164,7 @@ export function VerifyPage() {
 
       const provider = new BlockfrostProvider(blockfrostKey);
       const wallet = new MeshWallet({
-        networkId: 0, 
+        networkId: 0,
         fetcher: provider,
         submitter: provider,
         key: {
@@ -177,13 +173,10 @@ export function VerifyPage() {
         },
       });
 
-      // 1. Hash the signature first
       const sigHash = await sha256String(signatureDataUrl ?? '');
 
-      // 2. Helper to ensure we never exceed Cardano's 64-byte limit
       const trim64 = (s: string) => s.slice(0, 64);
 
-      // 3. Construct the metadata object safely
       const metadata = {
         credential_id: trim64(payload.credentialId),
         credential_name: trim64(payload.credentialName),
@@ -207,7 +200,7 @@ export function VerifyPage() {
       const address = await wallet.getChangeAddress();
 
       const tx = new Transaction({ initiator: wallet })
-        .sendLovelace(address, '1000000') 
+        .sendLovelace(address, '1000000')
         .setMetadata(674, metadata);
 
       const unsignedTx = await tx.build();
@@ -220,7 +213,6 @@ export function VerifyPage() {
         `${window.location.pathname}?tx=${hash}&cred=${payload.credentialId}`
       );
 
-      // ── Update the credential's status + txHash in the owner's localStorage ──
       if (payload.ownerWallet) {
         updateCredentialInStorage(payload.ownerWallet, payload.credentialId, {
           status: 'verified',
@@ -237,7 +229,6 @@ export function VerifyPage() {
     }
   };
 
-  // ── Invalid token ──────────────────────────────────────────────────────────
   if (step === 'invalid') {
     return (
       <div className={styles.page}>
@@ -252,7 +243,6 @@ export function VerifyPage() {
     );
   }
 
-  // ── Success ────────────────────────────────────────────────────────────────
   if (step === 'success') {
     return (
       <div className={styles.page}>
@@ -289,7 +279,6 @@ export function VerifyPage() {
 
   return (
     <div className={styles.page}>
-      {/* Header */}
       <div className={styles.topbar}>
         <div className={styles.brand}>⬡ ChainCred</div>
         <div className={styles.topbarLabel}>Credential Verification Request</div>
@@ -297,8 +286,6 @@ export function VerifyPage() {
 
       <div className={styles.container}>
         <div className={styles.layout}>
-
-          {/* ── Left: credential info ── */}
           <div className={styles.infoPanel}>
             <div className={styles.panelTitle}>Credential Details</div>
 
@@ -337,7 +324,6 @@ export function VerifyPage() {
             </div>
           </div>
 
-          {/* ── Right: verification form ── */}
           <div className={styles.formPanel}>
             <div className={styles.panelTitle}>Your Details</div>
 
@@ -415,6 +401,3 @@ export function VerifyPage() {
     </div>
   );
 }
-
-console.log('mnemonic set:', !!import.meta.env.VITE_APP_WALLET_MNEMONIC);
-console.log('blockfrost set:', !!import.meta.env.VITE_BLOCKFROST_API_KEY);

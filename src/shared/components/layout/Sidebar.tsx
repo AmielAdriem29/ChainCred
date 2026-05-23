@@ -111,7 +111,6 @@ export function Sidebar({ active, onNavigate }: Props) {
   const isOrganization = user?.accountType === 'organization';
   const navItems = isOrganization ? INSTITUTION_NAV : HOLDER_NAV;
 
-  // Get display name for user
   const displayName = isOrganization
     ? (user?.organizationName || user?.name || 'Organization')
     : (user?.name || user?.email?.split('@')[0] || 'User');
@@ -136,7 +135,6 @@ export function Sidebar({ active, onNavigate }: Props) {
       </nav>
 
       <div className={styles.bottomNav}>
-        {/* User info section */}
         <div className={styles.userInfo}>
           <div className={styles.userAvatar}>
             <span>{initial}</span>

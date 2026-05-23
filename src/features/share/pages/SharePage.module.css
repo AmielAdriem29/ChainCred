@@ -150,7 +150,6 @@
   overflow-x: auto;
 }
 
-/* Fixed table layout – columns never resize */
 .table {
   width: 100%;
   table-layout: fixed;
@@ -159,30 +158,29 @@
   text-align: left;
 }
 
-/* Column width definitions (adjust percentages as needed) */
 .table th:first-child,
 .table td:first-child {
-  width: 35%; /* Recipient */
+  width: 35%;
 }
 
 .table th:nth-child(2),
 .table td:nth-child(2) {
-  width: 20%; /* Date Granted */
+  width: 20%;
 }
 
 .table th:nth-child(3),
 .table td:nth-child(3) {
-  width: 15%; /* Status */
+  width: 15%;
 }
 
 .table th:nth-child(4),
 .table td:nth-child(4) {
-  width: 15%; /* Access (toggle) */
+  width: 15%;
 }
 
 .table th:nth-child(5),
 .table td:nth-child(5) {
-  width: 15%; /* Copy Link button */
+  width: 15%;
 }
 
 .table th {
@@ -226,7 +224,6 @@
   color: var(--text-secondary);
 }
 
-/* Toggle cell – ensures stable width */
 .toggleCell {
   text-align: center;
 }
@@ -234,10 +231,9 @@
 .toggleWrapper {
   display: inline-flex;
   justify-content: center;
-  width: 60px; /* Fixed width prevents column shift when toggling */
+  width: 60px;
 }
 
-/* Primary action button (matches VaultPage's .shareBtn) */
 .primaryBtn {
   display: flex;
   align-items: center;

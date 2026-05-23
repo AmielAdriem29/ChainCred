@@ -10,8 +10,8 @@
 }
 
 .modal {
-  background: #0d1220; /* Darker tone background profile to match the vault scheme */
-  border-top: 3px solid rgba(76, 130, 251, 0.35); /* 3px thick two-tone border rules */
+  background: #0d1220; 
+  border-top: 3px solid rgba(76, 130, 251, 0.35); 
   border-left: 3px solid rgba(255, 255, 255, 0.08);
   border-right: 3px solid rgba(255, 255, 255, 0.08);
   border-bottom: 3px solid rgba(255, 255, 255, 0.08);
@@ -64,7 +64,7 @@
 }
 
 .input:focus {
-  border-color: #2c4a8f; /* Slate blue focus parameter */
+  border-color: #2c4a8f; 
 }
 
 .inputError {
@@ -122,7 +122,7 @@
   padding: 0.7rem 1rem;
   border-radius: var(--radius-md);
   border: none;
-  background: #2c4a8f; /* Balanced Slate Blue Primary Button background mapping */
+  background: #2c4a8f; 
   color: #fff;
   font-size: 0.9rem;
   font-family: var(--font-sans);
@@ -132,7 +132,7 @@
 }
 
 .btnPrimary:hover:not(:disabled) {
-  background: #365aa9; /* Shifted hover state parameter matching your vault views */
+  background: #365aa9; 
 }
 
 .btnPrimary:disabled {

@@ -1,5 +1,3 @@
-// shared/utils/simpleStorage.ts
-
 export interface SimpleStorage {
   set(key: string, value: string): void;
   get(key: string): string | null;
@@ -7,10 +5,6 @@ export interface SimpleStorage {
   clear(): void;
 }
 
-/**
- * Creates a simple string storage wrapper around the browser's localStorage.
- * No namespacing – caller is responsible for unique keys.
- */
 export function createSimpleStorage(): SimpleStorage {
   return {
     set(key: string, value: string): void {

@@ -244,7 +244,7 @@ export function SettingsPage() {
                     </button>
                 </section>
 
-                {/* Danger Zone Card (styled consistently) */}
+                {/* Danger Zone Card */}
                 <section className={styles.dangerCard}>
                     <SectionHeader label="Danger zone" />
                     <div className={styles.dangerBody}>

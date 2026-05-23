@@ -9,7 +9,6 @@
   color: #f1f5f9;
 }
 
-/* Topbar */
 .topbar {
   display: flex;
   align-items: center;
@@ -31,14 +30,12 @@
   color: #94a3b8;
 }
 
-/* Container */
 .container {
   max-width: 1100px;
   margin: 0 auto;
   padding: 48px 24px;
 }
 
-/* Layout */
 .layout {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -47,10 +44,11 @@
 }
 
 @media (max-width: 768px) {
-  .layout { grid-template-columns: 1fr; }
+  .layout {
+    grid-template-columns: 1fr;
+  }
 }
 
-/* Panels */
 .infoPanel,
 .formPanel {
   background: rgba(13, 18, 32, 0.8);
@@ -71,7 +69,6 @@
   margin-bottom: 4px;
 }
 
-/* Credential card */
 .credCard {
   background: rgba(255, 255, 255, 0.03);
   border: 0.5px solid rgba(255, 255, 255, 0.08);
@@ -136,7 +133,6 @@
   word-break: break-all;
 }
 
-/* Owner card */
 .ownerCard {
   display: flex;
   align-items: center;
@@ -174,7 +170,6 @@
   margin-top: 2px;
 }
 
-/* Notice */
 .notice {
   display: flex;
   gap: 10px;
@@ -194,7 +189,6 @@
   font-size: 14px;
 }
 
-/* Form */
 .fields {
   display: flex;
   flex-direction: column;
@@ -229,8 +223,13 @@
   transition: border-color 0.15s;
 }
 
-.input:focus { border-color: #378add; }
-.input::placeholder { color: #475569; }
+.input:focus {
+  border-color: #378add;
+}
+
+.input::placeholder {
+  color: #475569;
+}
 
 .mismatch {
   font-size: 12px;
@@ -238,7 +237,6 @@
   margin-top: 2px;
 }
 
-/* Signature pad */
 .sigPadWrapper {
   position: relative;
   border: 1.5px dashed rgba(255, 255, 255, 0.12);
@@ -281,9 +279,10 @@
   transition: color 0.15s;
 }
 
-.clearBtn:hover { color: #f1f5f9; }
+.clearBtn:hover {
+  color: #f1f5f9;
+}
 
-/* Submit button */
 .submitBtn {
   background: #378add;
   border: none;
@@ -299,7 +298,9 @@
   width: 100%;
 }
 
-.submitBtn:hover:not(:disabled) { background: #2271c3; }
+.submitBtn:hover:not(:disabled) {
+  background: #2271c3;
+}
 
 .submitBtn:disabled {
   opacity: 0.4;
@@ -322,9 +323,12 @@
   animation: spin 0.8s linear infinite;
 }
 
-@keyframes spin { to { transform: rotate(360deg); } }
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
 
-/* Error box */
 .errorBox {
   background: rgba(239, 68, 68, 0.1);
   border: 0.5px solid #f87171;
@@ -334,7 +338,6 @@
   padding: 12px 14px;
 }
 
-/* Success */
 .successBox,
 .invalidBox {
   background: rgba(13, 18, 32, 0.8);
@@ -420,4 +423,6 @@
   transition: color 0.15s;
 }
 
-.explorerLink:hover { color: #93c5fd; }
+.explorerLink:hover {
+  color: #93c5fd;
+}

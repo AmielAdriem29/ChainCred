@@ -4,11 +4,10 @@
   overflow-y: auto;
   display: flex;
   flex-direction: column;
-  padding: 3rem 4.5rem; 
+  padding: 3rem 4.5rem;
   min-height: 0;
 }
 
-/* ── Row 1 Layout Structure ──────────────────────────────────────── */
 .rowOne {
   display: flex;
   align-items: center;
@@ -29,10 +28,9 @@
   margin: 0;
   letter-spacing: -0.5px;
   padding-left: 16px;
-  border-left: 3px solid #2c4a8f; /* Left accent matches the tone profile */
+  border-left: 3px solid #2c4a8f;
 }
 
-/* ── Row 2 Layout Structure (Slim Stats + Search Match Height) ── */
 .rowTwo {
   display: flex;
   align-items: stretch;
@@ -55,8 +53,6 @@
   display: flex;
   flex-direction: column;
   justify-content: center;
-  
-  /* Upgraded to 3px two-tone layout borders */
   border-top: 3px solid rgba(76, 130, 251, 0.35);
   border-left: 3px solid rgba(255, 255, 255, 0.08);
   border-right: 3px solid rgba(255, 255, 255, 0.08);
@@ -92,8 +88,6 @@
   display: flex;
   align-items: center;
   gap: 16px;
-  
-  /* Upgraded to 3px two-tone layout borders */
   border-top: 3px solid rgba(76, 130, 251, 0.35);
   border-left: 3px solid rgba(255, 255, 255, 0.08);
   border-right: 3px solid rgba(255, 255, 255, 0.08);
@@ -123,49 +117,25 @@
   position: relative;
   background: rgba(0, 0, 0, 0.2);
   padding: 4px;
-  border-radius: 30px; /* Rounded pill track style */
+  border-radius: var(--radius-xs);
   border: 1px solid rgba(255, 255, 255, 0.04);
   overflow: hidden;
-  isolation: isolate; /* Locks render levels so tab text stays above background slider */
+  isolation: isolate;
 }
 
-.filterToggleGroup {
-  display: flex;
-  position: relative;
-  background: rgba(0, 0, 0, 0.2);
-  padding: 4px;
-  border-radius: 30px; /* Only the outer track boundary is rounded */
-  border: 1px solid rgba(255, 255, 255, 0.04);
-  overflow: hidden;
-  isolation: isolate; 
-}
-
-.filterToggleGroup {
-  display: flex;
-  position: relative;
-  background: rgba(0, 0, 0, 0.2);
-  padding: 4px;
-  border-radius: var(--radius-xs); /* Reverted track back to matching component token */
-  border: 1px solid rgba(255, 255, 255, 0.04);
-  overflow: hidden;
-  isolation: isolate; 
-}
-
-/* ── Sliding Background Indicator Pill ── */
 .filterToggleGroup::before {
   content: '';
   position: absolute;
   top: 4px;
   bottom: 4px;
   left: 4px;
-  width: calc(33.333% - 4px); 
-  background: #2c4a8f; 
-  border-radius: var(--radius-xs); /* Sharp matching interior corners */
+  width: calc(33.333% - 4px);
+  background: #2c4a8f;
+  border-radius: var(--radius-xs);
   z-index: -1;
-  transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1); 
+  transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-/* ── Slide Transform Coordinates ── */
 .filterActive-all::before {
   transform: translateX(0);
 }
@@ -186,9 +156,9 @@
   font-size: 12px;
   font-weight: 600;
   padding: 8px 16px;
-  border-radius: var(--radius-xs); /* Sharp inner tab boundary limits */
+  border-radius: var(--radius-xs);
   cursor: pointer;
-  width: 80px; 
+  width: 80px;
   text-align: center;
   transition: color 0.15s ease;
 }
@@ -202,7 +172,6 @@
   transition: color 0.2s ease;
 }
 
-/* ── Row 3 Layout Structure ──────────────────────────────────────── */
 .rowThree {
   display: flex;
   align-items: center;
@@ -222,12 +191,11 @@
   margin: 0;
 }
 
-/* ── Action Buttons (Steel / Slate Blue Middle Ground) ────────────── */
 .uploadBtn {
   display: flex;
   align-items: center;
   gap: 10px;
-  background: #2c4a8f; /* Balanced Steel Blue */
+  background: #2c4a8f;
   color: #ffffff;
   border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: var(--radius-md);
@@ -242,7 +210,7 @@
 }
 
 .uploadBtn:hover {
-  background: #365aa9; /* Slightly brighter highlight shift on hover */
+  background: #365aa9;
   border-color: rgba(255, 255, 255, 0.2);
   transform: translateY(-1px);
 }
@@ -251,7 +219,7 @@
   display: flex;
   align-items: center;
   gap: 10px;
-  background: #2c4a8f; /* Balanced Steel Blue */
+  background: #2c4a8f;
   color: #fff;
   border: none;
   border-radius: var(--radius-md);
@@ -266,18 +234,16 @@
 }
 
 .shareBtn:hover {
-  background: #365aa9; /* Slightly brighter highlight shift on hover */
+  background: #365aa9;
   transform: translateY(-1px);
 }
 
-/* ── Credentials Section 4 Grid Layout ───────────────────────────── */
 .grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
   gap: 36px;
 }
 
-/* ── Toast ────────────────────────────────────────────────────────── */
 .toast {
   position: fixed;
   bottom: 2rem;

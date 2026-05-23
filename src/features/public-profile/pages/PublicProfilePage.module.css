@@ -1,4 +1,3 @@
-/* ── Page container – identical to VaultPage ── */
 .page {
   background: transparent;
   flex: 1;
@@ -10,7 +9,6 @@
   position: relative;
 }
 
-/* Watermark – subtle background text */
 .watermark {
   position: absolute;
   top: 50%;
@@ -32,7 +30,6 @@
   z-index: 1;
 }
 
-/* ── ROW 1: Heading + Banner Pill (inline) ── */
 .rowOne {
   display: flex;
   align-items: flex-start;
@@ -80,7 +77,6 @@
   margin-top: 4px;
 }
 
-/* ── ROW 2: Stats + Search Panel (matches VaultPage) ── */
 .rowTwo {
   display: flex;
   align-items: stretch;
@@ -156,7 +152,6 @@
   background: rgba(255, 255, 255, 0.08);
 }
 
-/* ── ROW 3: Section Header (consistent with Vault/Share) ── */
 .rowThree {
   display: flex;
   align-items: center;
@@ -181,7 +176,6 @@
   color: var(--text-tertiary);
 }
 
-/* ── CREDENTIAL CARDS (Logo block on left, matching CredentialCard) ── */
 .grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
@@ -214,7 +208,6 @@
   box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.07), 0 8px 28px rgba(0, 0, 0, 0.45);
 }
 
-/* Logo block (150px width, matches CredentialCard) */
 .cardLogo {
   width: 150px;
   border-radius: var(--radius-sm);
@@ -228,7 +221,6 @@
   flex-shrink: 0;
 }
 
-/* Right side content */
 .cardContent {
   display: flex;
   flex-direction: column;
@@ -272,7 +264,6 @@
   gap: 6px;
 }
 
-/* Empty state */
 .emptyState {
   text-align: center;
   color: var(--text-tertiary);
@@ -287,7 +278,6 @@
   grid-column: span 2;
 }
 
-/* Footer */
 .footer {
   margin-top: 2rem;
   padding-top: 1.5rem;
@@ -302,7 +292,6 @@
   font-weight: 500;
 }
 
-/* Denied card – uses same surface variable */
 .deniedCard {
   max-width: 600px;
   margin: 0 auto;

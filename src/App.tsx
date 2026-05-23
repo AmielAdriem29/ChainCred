@@ -29,28 +29,25 @@ function parseProfileRoute() {
 
 function AppContent() {
   const { user, walletDisconnected } = useAuth();
-  const isOrganization = user?.accountType === 'organization'; // ← changed
+  const isOrganization = user?.accountType === 'organization'; 
   const { active, navigate } = useNavigation(
-    isOrganization ? 'institution-dashboard' : 'vault' // ← changed
+    isOrganization ? 'institution-dashboard' : 'vault' 
   );
   const [authView, setAuthView] = useState<AuthView>('login');
   const shareParams = new URLSearchParams(window.location.search);
   const isShareLink = Boolean(shareParams.get('wallet') && shareParams.get('token'));
   const publicProfileWallet = parseProfileRoute();
 
-  // Public routes — never show reconnect modal
   if (isVerifyRoute()) return <VerifyPage />;
   if (publicProfileWallet) return <PublicProfilePage publicProfileWallet={publicProfileWallet} />;
   if (isShareLink) return <PublicProfilePage />;
 
-  // Not logged in
   if (!user) {
     return authView === 'login'
       ? <LoginPage onNavigateRegister={() => setAuthView('register')} />
       : <RegisterPage onNavigateLogin={() => setAuthView('login')} />;
   }
 
-  // Logged in but wallet disconnected — show modal over the app
   if (walletDisconnected) {
     return <WalletReconnectModal />;
   }
@@ -60,12 +57,10 @@ function AppContent() {
       <div className={styles.app}>
         <Sidebar active={active} onNavigate={navigate} />
         <main className={styles.content}>
-          {/* Holder routes */}
           {active === 'vault'    && <VaultPage />}
           {active === 'share'    && <SharePage />}
           {active === 'public'   && <PublicProfilePage />}
           {active === 'settings' && <SettingsPage />}
-          {/* Organization routes */}
           {active === 'institution-dashboard' && <InstitutionDashboardPage />}
           {active === 'institution-pending'   && <InstitutionPendingPage />}
         </main>

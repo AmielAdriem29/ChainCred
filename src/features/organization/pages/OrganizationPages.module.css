@@ -41,7 +41,6 @@
   padding-left: 4px;
 }
 
-/* Stats cards (two‑tone borders) */
 .statsRow {
   display: flex;
   gap: 16px;
@@ -83,7 +82,6 @@
   letter-spacing: 0.06em;
 }
 
-/* Table wrapper (two‑tone borders) */
 .tableWrapper {
   background: var(--surface-1);
   border-top: 3px solid rgba(76, 130, 251, 0.35);
@@ -143,7 +141,6 @@
   padding: 48px 20px !important;
 }
 
-/* Status badge */
 .badge {
   display: inline-flex;
   align-items: center;
@@ -174,7 +171,6 @@
   border: 1px solid rgba(245, 158, 11, 0.25);
 }
 
-/* Action */
 .revokeBtn {
   padding: 5px 14px;
   border-radius: 6px;
@@ -196,7 +192,6 @@
   color: var(--text-tertiary);
 }
 
-/* Modals (two‑tone borders) */
 .modalOverlay {
   position: fixed;
   inset: 0;
@@ -276,7 +271,6 @@
   background: #b91c1c;
 }
 
-/* PendingPage additions */
 .pendingActions {
   display: flex;
   gap: 8px;
@@ -331,7 +325,6 @@
   background: #15803d;
 }
 
-/* Success modal inside modal */
 .successModal {
   display: flex;
   flex-direction: column;
@@ -411,7 +404,6 @@
   background: #15803d;
 }
 
-/* Issue Credential button (topbar) */
 .issueBtn {
   padding: 10px 20px;
   border-radius: var(--radius-md);
@@ -431,7 +423,6 @@
   background: #365aa9;
 }
 
-/* Controls: search + filter */
 .controls {
   display: flex;
   align-items: center;
@@ -465,7 +456,7 @@
   color: var(--text-primary);
   font-family: var(--font-sans);
   font-size: 14px;
-  padding: 8px 32px 8px 32px;
+  padding: 8px 32px;
   outline: none;
   transition: border-color 0.15s, background 0.15s;
 }
@@ -528,14 +519,15 @@
   color: #ffffff;
 }
 
-/* Sortable columns */
 .sortable {
   cursor: pointer;
   user-select: none;
   white-space: nowrap;
 }
 
-.sortable:hover { color: var(--text-primary); }
+.sortable:hover {
+  color: var(--text-primary);
+}
 
 .sortIcon {
   margin-left: 4px;
@@ -548,15 +540,18 @@
   color: #4c82fb;
 }
 
-/* Clickable data rows */
 .dataRow {
   cursor: pointer;
   transition: background 0.12s;
 }
 
-.dataRow:hover { background: rgba(255, 255, 255, 0.03); }
+.dataRow:hover {
+  background: rgba(255, 255, 255, 0.03);
+}
 
-.dataRowExpanded { background: rgba(44, 74, 143, 0.08); }
+.dataRowExpanded {
+  background: rgba(44, 74, 143, 0.08);
+}
 
 .credName {
   font-weight: 500;
@@ -568,8 +563,9 @@
   white-space: nowrap;
 }
 
-/* Expanded detail row */
-.expandedRow { background: rgba(44, 74, 143, 0.05); }
+.expandedRow {
+  background: rgba(44, 74, 143, 0.05);
+}
 
 .expandedCell {
   padding: 0 !important;
@@ -616,9 +612,10 @@
   word-break: break-all;
 }
 
-.detailLink:hover { text-decoration: underline; }
+.detailLink:hover {
+  text-decoration: underline;
+}
 
-/* Pending page specific extras */
 .statPending { color: #f59e0b; }
 .statSelected { color: #4c82fb; }
 
@@ -634,7 +631,9 @@
   cursor: pointer;
 }
 
-.dataRowSelected { background: rgba(44, 74, 143, 0.1); }
+.dataRowSelected {
+  background: rgba(44, 74, 143, 0.1);
+}
 
 .bulkActions {
   display: flex;
@@ -663,7 +662,10 @@
   white-space: nowrap;
 }
 
-.bulkApproveBtn:hover { background: #22c55e; color: #fff; }
+.bulkApproveBtn:hover {
+  background: #22c55e;
+  color: #fff;
+}
 
 .bulkRejectBtn {
   padding: 8px 16px;
@@ -679,7 +681,10 @@
   white-space: nowrap;
 }
 
-.bulkRejectBtn:hover { background: #f87171; color: #fff; }
+.bulkRejectBtn:hover {
+  background: #f87171;
+  color: #fff;
+}
 
 .relativeDate {
   display: block;

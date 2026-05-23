@@ -1,9 +1,7 @@
-// shared/utils/simpleFileStorage.ts
-
 export interface SimpleFileStorage {
   save(key: string, blob: Blob): Promise<void>;
   get(key: string): Promise<Blob | null>;
-  remove(key: string): Promise<void>;      // renamed from delete
+  remove(key: string): Promise<void>;
   clear(): Promise<void>;
 }
 
@@ -52,7 +50,7 @@ export async function createSimpleFileStorage(
     async remove(key: string): Promise<void> {
       const transaction = db.transaction(storeName, 'readwrite');
       const store = transaction.objectStore(storeName);
-      store.delete(key);   // IndexedDB uses delete() – that's fine, only our method name changed
+      store.delete(key);
       return new Promise((resolve, reject) => {
         transaction.oncomplete = () => resolve();
         transaction.onerror = () => reject(transaction.error);

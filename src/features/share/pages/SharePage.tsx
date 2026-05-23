@@ -101,7 +101,6 @@ export function SharePage() {
           <h2 className={styles.heading}>Share Center</h2>
         </div>
         <button className={styles.primaryBtn} onClick={shareModal.open}>
-          {/* New SVG: share portfolio icon (three circles + connecting lines) */}
           <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="2">
             <circle cx="12" cy="4" r="2" />
             <circle cx="4" cy="8" r="2" />
