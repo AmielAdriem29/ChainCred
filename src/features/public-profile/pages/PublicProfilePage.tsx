@@ -21,6 +21,17 @@ function formatShortWallet(walletAddress: string): string {
   return `${walletAddress.slice(0, 8)}…${walletAddress.slice(-6)}`;
 }
 
+function loadHolderName(walletAddress: string): string | null {
+  try {
+    const raw = localStorage.getItem('chaincred_users');
+    if (!raw) return null;
+    const users = JSON.parse(raw) as Record<string, { name: string }>;
+    return users[walletAddress]?.name ?? null;
+  } catch {
+    return null;
+  }
+}
+
 interface PublicProfilePageProps {
   publicProfileWallet?: string;
 }
@@ -114,9 +125,10 @@ export function PublicProfilePage({ publicProfileWallet }: PublicProfilePageProp
   }, [allCredentials]);
 
   const filteredCredentials = useMemo(() => {
-    if (!searchQuery.trim()) return allCredentials;
+    const visible = allCredentials.filter(c => c.status !== 'rejected');
+    if (!searchQuery.trim()) return visible;
     const query = searchQuery.toLowerCase();
-    return allCredentials.filter(
+    return visible.filter(
       cred => cred.name.toLowerCase().includes(query) || cred.organization.toLowerCase().includes(query)
     );
   }, [allCredentials, searchQuery]);
@@ -160,7 +172,7 @@ export function PublicProfilePage({ publicProfileWallet }: PublicProfilePageProp
               {isDirectProfileRoute
                 ? `${walletDisplayName} · Public Profile`
                 : isSharedView
-                  ? `${formatShortWallet(activeWallet || requestedWallet)} · Public Profile`
+                  ? `${loadHolderName(activeWallet || requestedWallet) ?? formatShortWallet(activeWallet || requestedWallet)} · Public Profile`
                   : `${user?.name ?? 'Your Profile'} · Public Profile`}
             </h2>
             {!isDirectProfileRoute && user?.email && <p className={styles.profileEmail}>{user.email}</p>}
