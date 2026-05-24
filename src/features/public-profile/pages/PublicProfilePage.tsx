@@ -125,7 +125,7 @@ export function PublicProfilePage({ publicProfileWallet }: PublicProfilePageProp
   }, [allCredentials]);
 
   const filteredCredentials = useMemo(() => {
-    const visible = allCredentials.filter(c => c.status !== 'rejected');
+    const visible = allCredentials.filter(c => c.status !== 'rejected' && c.status !== 'revoked');
     if (!searchQuery.trim()) return visible;
     const query = searchQuery.toLowerCase();
     return visible.filter(
