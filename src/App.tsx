@@ -10,16 +10,11 @@ import { VaultPage } from './features/vault';
 import { SharePage } from './features/share';
 import { PublicProfilePage } from './features/public-profile';
 import { SettingsPage } from './features/settings';
-import { VerifyPage } from './features/verify';
 import { WalletReconnectModal } from './features/auth/components/WalletReconnectModal';
 import { InstitutionDashboardPage, InstitutionPendingPage } from './features/organization';
 import styles from './App.module.css';
 
 type AuthView = 'login' | 'register';
-
-function isVerifyRoute() {
-  return window.location.pathname.startsWith('/verify/');
-}
 
 function parseProfileRoute() {
   const pathname = window.location.pathname;
@@ -38,7 +33,6 @@ function AppContent() {
   const isShareLink = Boolean(shareParams.get('wallet') && shareParams.get('token'));
   const publicProfileWallet = parseProfileRoute();
 
-  if (isVerifyRoute()) return <VerifyPage />;
   if (publicProfileWallet) return <PublicProfilePage publicProfileWallet={publicProfileWallet} />;
   if (isShareLink) return <PublicProfilePage />;
 
